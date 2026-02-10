@@ -1,11 +1,13 @@
 {
-  "completed_tasks": [],
+  "completed_tasks": [
+    "ui-proposal-detail-polish"
+  ],
   "failed_tasks": {
     "ui-css-foundations": 1,
     "ui-catalog-polish": 1,
     "ui-detail-polish": 1,
     "ui-approvals-polish": 1
   },
-  "cycle_count": 5,
-  "last_focus": "ui-approvals-polish"
+  "cycle_count": 6,
+  "last_focus": "ui-proposal-detail-polish"
 }
