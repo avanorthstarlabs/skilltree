@@ -23,6 +23,7 @@ QUALITY_GATE = RUNTIME / "constitution" / "quality_gate.md"
 PROGRESS_FILE = ROOT / "patch_progress.json"
 DONE_CRITERIA = ROOT / "done_criteria.json"
 ROUTING_CFG = ROOT / "routing.json"
+DESIGN_SYSTEM = ROOT / "DESIGN_SYSTEM.md"
 LOGS = RUNTIME / "logs"
 LOGS.mkdir(parents=True, exist_ok=True)
 
@@ -236,11 +237,15 @@ def context_for_task(task: dict) -> str:
     for p in sorted(ROOT.glob("lib/*.js")):
         add(str(p.relative_to(ROOT)), 3000)
 
-    # 3) For UI page tasks: include layout + globals.css for style consistency
+    # 3) For UI page tasks: include layout + globals.css + design system for style consistency
     task_id = task.get("id", "")
     if task_id.startswith("page-") or task_id in ("layout-nav", "styling"):
         add("app/layout.js", 3000)
-        add("app/globals.css", 5000)
+        add("app/globals.css", 6000)
+        # Include the design system bible — this is the most important context for UI tasks
+        design_sys = ROOT / "DESIGN_SYSTEM.md"
+        if design_sys.exists():
+            add("DESIGN_SYSTEM.md", 8000)
         # Also include an existing page as style reference
         for ref in ["app/page.js", "app/approvals/page.js"]:
             if (ROOT / ref).exists() and ref not in task.get("required_files", []):
@@ -335,19 +340,52 @@ def validate_diff(diff: str) -> None:
 
 # ── LLM providers ──
 
-def call_openai(prompt: str, model: str, max_output_tokens: int = 16000) -> str:
+SYSTEM_API = (
+    "You are a senior backend engineer specializing in robust, production-grade APIs. "
+    "You write correct, defensively-coded route handlers with proper HTTP status codes, "
+    "input validation, error responses with helpful messages, idempotency guards, and "
+    "consistent JSON response shapes. You handle edge cases: missing records return 404, "
+    "duplicate operations return 409, invalid input returns 400 with field-level errors. "
+    "You follow existing import patterns and reuse shared utilities (store.js, validate.js). "
+    "Return ONLY a unified diff (git format). Multiple files per diff are encouraged. "
+    "The first line MUST start with: diff --git "
+    "No markdown fences, no commentary, no extra text. "
+    "Do NOT modify CHANGELOG.md."
+)
+
+SYSTEM_UI = (
+    "You are a senior UI engineer who builds premium, SaaS-grade interfaces that compete "
+    "with Linear, Vercel, and Stripe dashboards. You have an obsessive eye for detail. "
+    "You follow the project's DESIGN_SYSTEM.md specifications exactly: color tokens, "
+    "typography scale, spacing grid, component patterns, hover/focus states, accessibility. "
+    "Every page has: page header with title + subtitle, loading states (skeleton or spinner), "
+    "empty states (icon + heading + description), error states (message + retry button). "
+    "Every interactive element has hover and focus-visible styles. Every form input has a "
+    "visible label (never placeholder-only). You use CSS variables from globals.css — never "
+    "raw hex values. You match existing component class names and patterns exactly. "
+    "You write semantic HTML with proper ARIA attributes and keyboard accessibility. "
+    "Return ONLY a unified diff (git format). Multiple files per diff are encouraged. "
+    "The first line MUST start with: diff --git "
+    "No markdown fences, no commentary, no extra text. "
+    "Do NOT modify CHANGELOG.md."
+)
+
+
+def _system_prompt_for(provider: str) -> str:
+    """Return the role-specific system prompt based on provider routing."""
+    if provider == "claude":
+        return SYSTEM_UI
+    return SYSTEM_API
+
+
+def call_openai(prompt: str, model: str, max_output_tokens: int = 16000, system: str = "") -> str:
     from openai import OpenAI
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY not set")
     client = OpenAI(api_key=api_key, timeout=300)
-    system = (
-        "You are an expert autonomous engineer building a production application. "
-        "Return ONLY a unified diff (git format). Multiple files per diff are encouraged. "
-        "The first line MUST start with: diff --git "
-        "No markdown fences, no commentary, no extra text. "
-        "Do NOT modify CHANGELOG.md."
-    )
+    if not system:
+        system = SYSTEM_API
     resp = client.responses.create(
         model=model,
         input=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
@@ -364,19 +402,14 @@ def call_openai(prompt: str, model: str, max_output_tokens: int = 16000) -> str:
     return text
 
 
-def call_claude(prompt: str, model: str, max_tokens: int = 16000) -> str:
+def call_claude(prompt: str, model: str, max_tokens: int = 16000, system: str = "") -> str:
     from anthropic import Anthropic
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise RuntimeError("ANTHROPIC_API_KEY not set")
     client = Anthropic(api_key=api_key, timeout=300)
-    system = (
-        "You are an expert autonomous engineer building a production application. "
-        "Return ONLY a unified diff (git format). Multiple files per diff are encouraged. "
-        "The first line MUST start with: diff --git "
-        "No markdown fences, no commentary, no extra text. "
-        "Do NOT modify CHANGELOG.md."
-    )
+    if not system:
+        system = SYSTEM_UI
     msg = client.messages.create(
         model=model, max_tokens=max_tokens, temperature=0.2, system=system,
         messages=[{"role": "user", "content": prompt}],
@@ -477,11 +510,39 @@ def main():
         for p in focus["missing_patterns"][:8]:
             missing_desc += f"  - {p}\n"
 
+    # Build role-specific instruction addendum
+    role_instructions = ""
+    if provider == "claude":
+        role_instructions = """
+UI/DESIGN RULES (CRITICAL — follow exactly):
+- Use CSS class names from globals.css. NEVER inline styles or raw hex colors.
+- Every page: page header (h1 + subtitle), empty state, loading state, error state.
+- Every interactive element: hover state + focus-visible state with accent ring.
+- Forms: visible label above every input, focus ring, field-level validation.
+- Cards: 24px padding, 12px radius, shadow-sm at rest, shadow-md + translateY(-2px) on hover.
+- Badges: filled background with status colors, uppercase, 0.75rem, 600 weight.
+- Typography: page title 1.75rem/700, card title 1.125rem/600, body 0.875rem, caption 0.75rem.
+- Spacing: 8px grid. Card padding 24px, section spacing 32px, form groups 20px.
+- Buttons: verb-first labels, 40px min height, disabled opacity 0.5.
+- If DESIGN_SYSTEM.md is in the file contents below, follow it as the single source of truth.
+"""
+    else:
+        role_instructions = """
+API RULES (CRITICAL — follow exactly):
+- Import from lib/store.js, lib/validate.js, lib/simulator.js — reuse existing utilities.
+- Every route handler: proper HTTP status codes (200, 201, 400, 404, 409, 500).
+- Error responses: { error: "descriptive message" } with correct status code.
+- Validate inputs before processing. Return field-level errors for bad input.
+- Use NextResponse.json() consistently. Always set status codes explicitly.
+- Handle edge cases: missing records, duplicate operations, invalid state transitions.
+"""
+
     instructions = f"""You are an expert engineer building a production-grade application.
 
 CURRENT TASK: {focus['name']}
 {focus.get('description', '')}
 {missing_desc}
+{role_instructions}
 COMPLETION STATUS:
 {completion}
 
@@ -509,7 +570,8 @@ Output ONLY the unified diff. No markdown. No commentary.
 First line MUST be: diff --git a/... b/...
 """.strip()
 
-    # Call model
+    # Call model with role-specific system prompt
+    sys_prompt = _system_prompt_for(provider)
     raw = ""
     diff = ""
     last_err = ""
@@ -518,9 +580,9 @@ First line MUST be: diff --git a/... b/...
         try:
             prompt = instructions + extra
             if provider in ("codex", "openai"):
-                raw = call_openai(prompt, model=model, max_output_tokens=max_out)
+                raw = call_openai(prompt, model=model, max_output_tokens=max_out, system=sys_prompt)
             elif provider == "claude":
-                raw = call_claude(prompt, model=model, max_tokens=max_out)
+                raw = call_claude(prompt, model=model, max_tokens=max_out, system=sys_prompt)
             else:
                 raw = call_ollama(prompt, model=model)
         except Exception as e:
