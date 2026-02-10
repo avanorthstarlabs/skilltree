@@ -8,6 +8,12 @@ export async function GET(request, { params }) {
     if (!slug) {
       return NextResponse.json({ error: 'Workflow not found' }, { status: 404 });
     }
+    if (slug.length > 200) {
+      return NextResponse.json(
+        { error: 'Invalid slug', fields: { slug: 'Must be 200 characters or fewer' } },
+        { status: 400 }
+      );
+    }
 
     const workflow = getWorkflowBySlug(slug);
     if (!workflow) {

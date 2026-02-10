@@ -12,6 +12,7 @@ export async function GET(request) {
     const fieldErrors = {};
     const validateOptionalString = (key, value) => {
       if (value === null) return undefined;
+      // URLSearchParams.get always returns string|null, but keep defensive validation.
       if (typeof value !== 'string') {
         fieldErrors[key] = 'Must be a string';
         return undefined;
@@ -19,6 +20,10 @@ export async function GET(request) {
       const trimmed = value.trim();
       if (!trimmed) {
         fieldErrors[key] = 'Must not be empty';
+        return undefined;
+      }
+      if (trimmed.length > 200) {
+        fieldErrors[key] = 'Must be 200 characters or fewer';
         return undefined;
       }
       return trimmed;
@@ -35,11 +40,7 @@ export async function GET(request) {
       );
     }
 
-    const workflows = getWorkflows({
-      search: s,
-      category: c,
-      tag: t
-    });
+    const workflows = getWorkflows({ search: s, category: c, tag: t });
 
     return NextResponse.json(
       {
