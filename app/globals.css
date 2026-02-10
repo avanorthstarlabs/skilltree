@@ -373,6 +373,12 @@ body {
   margin-top: 4px;
 }
 
+.form-required {
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
 /* ===== Tables ===== */
 .table-container {
   overflow-x: auto;
@@ -392,6 +398,7 @@ body {
 
 .table th {
   font-weight: 600;
+.skeleton-label { height: 14px; width: 30%; border-radius: 4px; margin-bottom: 6px; }
   color: var(--color-text-secondary);
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -407,6 +414,128 @@ body {
 .metric-card {
   text-align: center;
   padding: 24px;
+/* ===== Workflow Detail Skeleton ===== */
+.workflow-detail-skeleton {
+  max-width: 640px;
+}
+
+.workflow-detail-skeleton-card {
+  pointer-events: none;
+}
+
+.workflow-detail-skeleton-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.workflow-detail-skeleton-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workflow-detail-skeleton-fields {
+  margin-bottom: 24px;
+}
+
+/* ===== Workflow Detail Page ===== */
+.workflow-detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.workflow-detail-meta {
+  margin-bottom: 24px;
+}
+
+.workflow-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-narrow {
+  max-width: 640px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 24px;
+}
+
+.form-error-banner {
+  margin-bottom: 24px;
+}
+
+.error-banner-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.error-banner-list li {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* ===== Success State ===== */
+.success-detail-card {
+  text-align: left;
+  margin: 24px auto 0;
+}
+
+.success-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.success-workflow-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.success-proposal-id {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+.success-proposal-id code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background: var(--color-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.success-actions {
+  display: flex;
+  gap: 12px;
+}
+
   min-height: 120px;
   display: flex;
   flex-direction: column;
