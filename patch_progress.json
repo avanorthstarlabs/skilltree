@@ -7,8 +7,9 @@
     "ui-css-foundations": 1,
     "ui-catalog-polish": 1,
     "ui-detail-polish": 1,
-    "ui-approvals-polish": 1
+    "ui-approvals-polish": 1,
+    "ui-metrics-polish": 1
   },
-  "cycle_count": 7,
-  "last_focus": "ui-receipts-polish"
+  "cycle_count": 8,
+  "last_focus": "ui-metrics-polish"
 }
