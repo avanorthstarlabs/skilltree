@@ -1,0 +1,211 @@
+[
+  {
+    "id": "wf-001",
+    "slug": "bug-triage",
+    "name": "AI Bug Triage",
+    "description": "Automatically categorize, prioritize, and assign bug reports using AI analysis. Examines title, description, and component context to produce a structured triage recommendation with severity assessment and suggested assignee.",
+    "category": "Engineering",
+    "tags": ["bugs", "triage", "automation", "engineering"],
+    "icon": "🐛",
+    "inputs_schema": {
+      "type": "object",
+      "required": ["title", "description", "severity", "component"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "label": "Bug Title",
+          "placeholder": "Brief summary of the issue",
+          "minLength": 5
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "placeholder": "Detailed description including steps to reproduce",
+          "multiline": true,
+          "minLength": 20
+        },
+        "severity": {
+          "type": "enum",
+          "label": "Reported Severity",
+          "options": ["critical", "high", "medium", "low"],
+          "default": "medium"
+        },
+        "component": {
+          "type": "string",
+          "label": "Affected Component",
+          "placeholder": "e.g. auth, payments, dashboard"
+        }
+      }
+    },
+    "outputs_schema": {
+      "priority_score": "number (1-10)",
+      "category": "string",
+      "suggested_assignee": "string",
+      "estimated_effort": "string",
+      "recommendation": "string"
+    },
+    "created_at": "2026-01-15T10:00:00Z"
+  },
+  {
+    "id": "wf-002",
+    "slug": "weekly-status",
+    "name": "Weekly Status Digest",
+    "description": "Generate a comprehensive weekly status summary for your team. Aggregates activity, highlights key accomplishments, flags blockers, and produces a formatted digest ready for stakeholder distribution.",
+    "category": "Operations",
+    "tags": ["status", "reporting", "weekly", "team"],
+    "icon": "📊",
+    "inputs_schema": {
+      "type": "object",
+      "required": ["team_name", "date_range"],
+      "properties": {
+        "team_name": {
+          "type": "string",
+          "label": "Team Name",
+          "placeholder": "e.g. Platform Engineering"
+        },
+        "date_range": {
+          "type": "string",
+          "label": "Date Range",
+          "placeholder": "e.g. Feb 3 - Feb 7, 2026"
+        },
+        "include_metrics": {
+          "type": "boolean",
+          "label": "Include Performance Metrics",
+          "default": true
+        }
+      }
+    },
+    "outputs_schema": {
+      "summary": "string",
+      "accomplishments": "string[]",
+      "blockers": "string[]",
+      "next_week_priorities": "string[]",
+      "metrics_snapshot": "object"
+    },
+    "created_at": "2026-01-15T10:00:00Z"
+  },
+  {
+    "id": "wf-003",
+    "slug": "qa-checklist",
+    "name": "QA Checklist Generator",
+    "description": "Create a thorough testing checklist from feature requirements. Analyzes requirements text to produce categorized test cases covering functional, edge-case, and regression scenarios tailored to the feature.",
+    "category": "Quality",
+    "tags": ["qa", "testing", "checklist", "quality"],
+    "icon": "✅",
+    "inputs_schema": {
+      "type": "object",
+      "required": ["feature_name", "requirements_text"],
+      "properties": {
+        "feature_name": {
+          "type": "string",
+          "label": "Feature Name",
+          "placeholder": "e.g. User Profile Editing"
+        },
+        "requirements_text": {
+          "type": "string",
+          "label": "Requirements",
+          "placeholder": "Paste the feature requirements or user story",
+          "multiline": true,
+          "minLength": 30
+        },
+        "test_types": {
+          "type": "array",
+          "label": "Test Types to Include",
+          "options": ["functional", "edge-case", "regression", "performance", "accessibility"],
+          "default": ["functional", "edge-case", "regression"]
+        }
+      }
+    },
+    "outputs_schema": {
+      "total_cases": "number",
+      "categories": "object",
+      "checklist": "string[]",
+      "coverage_notes": "string"
+    },
+    "created_at": "2026-01-20T10:00:00Z"
+  },
+  {
+    "id": "wf-004",
+    "slug": "onboarding-guide",
+    "name": "Onboarding Guide",
+    "description": "Generate a personalized onboarding plan for new team members. Creates a week-by-week schedule with role-specific tasks, recommended reading, key contacts, and milestone checkpoints.",
+    "category": "People",
+    "tags": ["onboarding", "hr", "people", "guide"],
+    "icon": "🎯",
+    "inputs_schema": {
+      "type": "object",
+      "required": ["role", "department"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "label": "Job Role",
+          "placeholder": "e.g. Senior Backend Engineer"
+        },
+        "department": {
+          "type": "string",
+          "label": "Department",
+          "placeholder": "e.g. Platform Engineering"
+        },
+        "start_date": {
+          "type": "string",
+          "label": "Start Date",
+          "placeholder": "e.g. 2026-03-01"
+        }
+      }
+    },
+    "outputs_schema": {
+      "week_1_tasks": "string[]",
+      "week_2_tasks": "string[]",
+      "key_contacts": "object[]",
+      "recommended_reading": "string[]",
+      "milestones": "object[]"
+    },
+    "created_at": "2026-01-25T10:00:00Z"
+  },
+  {
+    "id": "wf-005",
+    "slug": "incident-summary",
+    "name": "Incident Summary",
+    "description": "Create a structured post-incident report from raw timeline data. Produces an executive summary, root cause analysis, impact assessment, timeline of events, and actionable follow-up items.",
+    "category": "Engineering",
+    "tags": ["incident", "postmortem", "sre", "reliability"],
+    "icon": "🚨",
+    "inputs_schema": {
+      "type": "object",
+      "required": ["incident_id", "severity", "timeline_text"],
+      "properties": {
+        "incident_id": {
+          "type": "string",
+          "label": "Incident ID",
+          "placeholder": "e.g. INC-2026-042"
+        },
+        "severity": {
+          "type": "enum",
+          "label": "Severity",
+          "options": ["sev1", "sev2", "sev3", "sev4"]
+        },
+        "affected_systems": {
+          "type": "array",
+          "label": "Affected Systems",
+          "placeholder": "e.g. API Gateway, Auth Service"
+        },
+        "timeline_text": {
+          "type": "string",
+          "label": "Timeline & Details",
+          "placeholder": "Describe what happened chronologically",
+          "multiline": true,
+          "minLength": 50
+        }
+      }
+    },
+    "outputs_schema": {
+      "executive_summary": "string",
+      "root_cause": "string",
+      "impact": "object",
+      "timeline": "object[]",
+      "action_items": "string[]",
+      "lessons_learned": "string[]"
+    },
+    "created_at": "2026-02-01T10:00:00Z"
+  }
+]

@@ -1,0 +1,4 @@
+{
+  "force_provider": "openai",
+  "openai_model": "gpt-5.2"
+}
