@@ -240,11 +240,13 @@ def context_for_task(task: dict) -> str:
     for p in sorted(ROOT.glob("lib/*.js")):
         add(str(p.relative_to(ROOT)), 3000)
 
-    # 3) For UI page tasks: include layout + globals.css + design system for style consistency
+    # 3) For UI tasks: include layout + globals.css + design system for style consistency
     task_id = task.get("id", "")
-    if task_id.startswith("page-") or task_id in ("layout-nav", "styling"):
+    is_ui_task = (task_id.startswith("page-") or task_id.startswith("ui-")
+                  or task_id in ("layout-nav", "styling"))
+    if is_ui_task:
         add("app/layout.js", 3000)
-        add("app/globals.css", 6000)
+        add("app/globals.css", 10000)  # Full file — critical for UI diffs
         # Include the design system bible — this is the most important context for UI tasks
         design_sys = ROOT / "DESIGN_SYSTEM.md"
         if design_sys.exists():
