@@ -25,3 +25,6 @@
 ## 2026-02-10T05:48:23.235328+00:00
 - Workflows API endpoints: workflow-marketplace_patch_2026-02-10T05-48-14.354497+00-00.diff
 
+## 2026-02-10T05:58:20.933756+00:00
+- Proposal detail page: loading, error, grid layout, no inline styles: workflow-marketplace_patch_2026-02-10T05-58-10.921635+00-00.diff
+
