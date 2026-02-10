@@ -24,11 +24,6 @@ export async function GET(request) {
       return trimmed;
     };
 
-    const normalizedSearch = typeof search === 'string' && search.trim() ? search.trim() : undefined;
-    const normalizedCategory = typeof category === 'string' && category.trim() ? category.trim() : undefined;
-    const normalizedTag = typeof tag === 'string' && tag.trim() ? tag.trim() : undefined;
-
-    // Re-normalize with field-level errors where applicable
     const s = validateOptionalString('search', search);
     const c = validateOptionalString('category', category);
     const t = validateOptionalString('tag', tag);
@@ -41,17 +36,17 @@ export async function GET(request) {
     }
 
     const workflows = getWorkflows({
-      search: s ?? normalizedSearch,
-      category: c ?? normalizedCategory,
-      tag: t ?? normalizedTag
+      search: s,
+      category: c,
+      tag: t
     });
 
     return NextResponse.json({
       workflows,
       filters: {
-        search: (s ?? normalizedSearch) || null,
-        category: (c ?? normalizedCategory) || null,
-        tag: (t ?? normalizedTag) || null
+        search: s || null,
+        category: c || null,
+        tag: t || null
       }
     }, { status: 200 });
   } catch (err) {
