@@ -3,10 +3,9 @@ import { getWorkflowBySlug } from '@/lib/store';
 
 export async function GET(request, { params }) {
   try {
-    const slug = params?.slug;
-    if (!slug || typeof slug !== 'string') {
-      return NextResponse.json({ error: 'Workflow not found' }, { status: 404 });
-    }
+    const rawSlug = params?.slug;
+    const slug = typeof rawSlug === 'string' ? rawSlug.trim() : '';
+    if (!slug) return NextResponse.json({ error: 'Workflow not found' }, { status: 404 });
 
     const workflow = getWorkflowBySlug(slug);
     if (!workflow) {
