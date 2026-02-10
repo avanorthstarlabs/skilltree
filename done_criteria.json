@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "name": "package.json exists",
+      "type": "file_exists",
+      "path": "package.json"
+    },
+    {
+      "name": "App directory exists",
+      "type": "file_exists",
+      "path": "app"
+    }
+  ],
+  "validation_commands": [
+    ["npm", "run", "build"]
+  ]
+}
