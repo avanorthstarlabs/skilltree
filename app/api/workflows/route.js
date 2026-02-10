@@ -41,14 +41,17 @@ export async function GET(request) {
       tag: t
     });
 
-    return NextResponse.json({
-      workflows,
-      filters: {
-        search: s || null,
-        category: c || null,
-        tag: t || null
-      }
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        workflows,
+        filters: {
+          search: s || null,
+          category: c || null,
+          tag: t || null
+        }
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.error('GET /api/workflows failed', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
