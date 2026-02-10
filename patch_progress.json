@@ -4,12 +4,12 @@
     "ui-receipts-polish"
   ],
   "failed_tasks": {
-    "ui-css-foundations": 1,
+    "ui-css-foundations": 2,
     "ui-catalog-polish": 1,
     "ui-detail-polish": 1,
     "ui-approvals-polish": 1,
     "ui-metrics-polish": 1
   },
-  "cycle_count": 8,
-  "last_focus": "ui-metrics-polish"
+  "cycle_count": 9,
+  "last_focus": "ui-css-foundations"
 }
