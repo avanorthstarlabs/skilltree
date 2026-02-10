@@ -1,6 +1,7 @@
 {
   "completed_tasks": [
-    "ui-proposal-detail-polish"
+    "ui-proposal-detail-polish",
+    "ui-receipts-polish"
   ],
   "failed_tasks": {
     "ui-css-foundations": 1,
@@ -8,6 +9,6 @@
     "ui-detail-polish": 1,
     "ui-approvals-polish": 1
   },
-  "cycle_count": 6,
-  "last_focus": "ui-proposal-detail-polish"
+  "cycle_count": 7,
+  "last_focus": "ui-receipts-polish"
 }
