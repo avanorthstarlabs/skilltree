@@ -1,4 +1,27 @@
 {
-  "force_provider": "openai",
-  "openai_model": "gpt-5.2"
+  "default_provider": "openai",
+  "openai_model": "gpt-5.2",
+  "claude_model": "claude-opus-4-6",
+  "task_routing": {
+    "claude": [
+      "layout-nav",
+      "page-catalog",
+      "page-workflow-detail",
+      "page-approvals",
+      "page-proposal-detail",
+      "page-receipts",
+      "page-metrics",
+      "styling"
+    ],
+    "openai": [
+      "storage-layer",
+      "seed-workflows",
+      "input-validation",
+      "simulator",
+      "api-workflows",
+      "api-proposals",
+      "api-approvals",
+      "api-receipts-metrics"
+    ]
+  }
 }

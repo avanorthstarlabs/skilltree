@@ -22,8 +22,36 @@ CHANGELOG = ROOT / "CHANGELOG.md"
 QUALITY_GATE = RUNTIME / "constitution" / "quality_gate.md"
 PROGRESS_FILE = ROOT / "patch_progress.json"
 DONE_CRITERIA = ROOT / "done_criteria.json"
+ROUTING_CFG = ROOT / "routing.json"
 LOGS = RUNTIME / "logs"
 LOGS.mkdir(parents=True, exist_ok=True)
+
+
+def load_routing() -> dict:
+    if ROUTING_CFG.exists():
+        try:
+            return json.loads(ROUTING_CFG.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+
+def provider_for_task(task_id: str) -> tuple[str, str]:
+    """Return (provider, model) for a given task ID based on routing.json task_routing."""
+    cfg = load_routing()
+    task_map = cfg.get("task_routing", {})
+    for provider, task_ids in task_map.items():
+        if task_id in task_ids:
+            if provider == "claude":
+                return "claude", cfg.get("claude_model", "claude-opus-4-6")
+            elif provider in ("openai", "codex"):
+                return provider, cfg.get("openai_model", "gpt-5.2")
+    # Fallback to env / defaults
+    fallback_provider = os.environ.get("AUTOPATCH_PROVIDER", cfg.get("default_provider", "openai")).strip().lower()
+    fallback_model = os.environ.get("AUTOPATCH_MODEL", cfg.get("openai_model", "gpt-5.2"))
+    if fallback_provider == "claude":
+        fallback_model = cfg.get("claude_model", "claude-opus-4-6")
+    return fallback_provider, fallback_model
 
 
 def utcnow():
@@ -405,8 +433,6 @@ def verify_build() -> tuple[bool, str]:
 # ── Main ──
 
 def main():
-    model = os.environ.get("AUTOPATCH_MODEL", "gpt-5.2")
-    provider = os.environ.get("AUTOPATCH_PROVIDER", "openai").strip().lower()
     max_out = int(os.environ.get("AUTOPATCH_MAX_TOKENS", "16000"))
 
     ensure_git()
@@ -430,7 +456,10 @@ def main():
     focus = pending[0]
     focus_id = focus["id"]
     progress["last_focus"] = focus_id
-    log_event("focus", "start", f"Working on: {focus['name']} (cycle {progress['cycle_count']})")
+
+    # Per-task provider routing
+    provider, model = provider_for_task(focus_id)
+    log_event("focus", "start", f"Working on: {focus['name']} (cycle {progress['cycle_count']}) [provider={provider}, model={model}]")
 
     # Build prompt
     task_context = context_for_task(focus)
@@ -491,7 +520,7 @@ First line MUST be: diff --git a/... b/...
             if provider in ("codex", "openai"):
                 raw = call_openai(prompt, model=model, max_output_tokens=max_out)
             elif provider == "claude":
-                raw = call_claude(prompt, model=os.environ.get("CLAUDE_MODEL", "claude-opus-4-6"), max_tokens=max_out)
+                raw = call_claude(prompt, model=model, max_tokens=max_out)
             else:
                 raw = call_ollama(prompt, model=model)
         except Exception as e:
