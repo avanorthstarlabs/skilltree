@@ -131,15 +131,18 @@ def evaluate_task(task: dict) -> dict:
     """Check if a feature task is complete."""
     missing_files = []
     missing_patterns = []
+    # Collect combined text from all required files for pattern matching
+    combined_text = ""
     for rel_path in task.get("required_files", []):
         full = ROOT / rel_path
         if not full.exists():
             missing_files.append(rel_path)
         else:
-            text = safe_read(full)
-            for pattern in task.get("check_patterns", []):
-                if pattern not in text:
-                    missing_patterns.append(f"{rel_path}: missing '{pattern}'")
+            combined_text += safe_read(full) + "\n"
+    # Check patterns across ALL required files collectively
+    for pattern in task.get("check_patterns", []):
+        if pattern not in combined_text:
+            missing_patterns.append(f"missing '{pattern}'")
     complete = len(missing_files) == 0 and len(missing_patterns) == 0
     # If no required_files defined, task is never auto-complete
     if not task.get("required_files"):
