@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getWorkflowBySlug } from '@/lib/store';
+import { getWorkflowBySlug } from '@/lib/store.js';
 
 export async function GET(request, { params }) {
   try {
@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
     if (!workflow) {
       return NextResponse.json({ error: 'Workflow not found' }, { status: 404 });
     }
-    return NextResponse.json({ workflow });
+    return NextResponse.json({ workflow }, { status: 200 });
   } catch (err) {
     console.error('GET /api/workflows/[slug] failed', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

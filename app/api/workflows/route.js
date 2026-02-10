@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getWorkflows } from '@/lib/store';
+import { getWorkflows } from '@/lib/store.js';
 
 export async function GET(request) {
   try {
@@ -8,24 +8,52 @@ export async function GET(request) {
     const category = searchParams.get('category');
     const tag = searchParams.get('tag');
 
+    // Validate query params: if present, they must be non-empty strings.
+    const fieldErrors = {};
+    const validateOptionalString = (key, value) => {
+      if (value === null) return undefined;
+      if (typeof value !== 'string') {
+        fieldErrors[key] = 'Must be a string';
+        return undefined;
+      }
+      const trimmed = value.trim();
+      if (!trimmed) {
+        fieldErrors[key] = 'Must not be empty';
+        return undefined;
+      }
+      return trimmed;
+    };
+
     const normalizedSearch = typeof search === 'string' && search.trim() ? search.trim() : undefined;
     const normalizedCategory = typeof category === 'string' && category.trim() ? category.trim() : undefined;
     const normalizedTag = typeof tag === 'string' && tag.trim() ? tag.trim() : undefined;
 
+    // Re-normalize with field-level errors where applicable
+    const s = validateOptionalString('search', search);
+    const c = validateOptionalString('category', category);
+    const t = validateOptionalString('tag', tag);
+
+    if (Object.keys(fieldErrors).length > 0) {
+      return NextResponse.json(
+        { error: 'Invalid query parameters', fields: fieldErrors },
+        { status: 400 }
+      );
+    }
+
     const workflows = getWorkflows({
-      search: normalizedSearch,
-      category: normalizedCategory,
-      tag: normalizedTag
+      search: s ?? normalizedSearch,
+      category: c ?? normalizedCategory,
+      tag: t ?? normalizedTag
     });
 
     return NextResponse.json({
       workflows,
       filters: {
-        search: normalizedSearch || null,
-        category: normalizedCategory || null,
-        tag: normalizedTag || null
+        search: (s ?? normalizedSearch) || null,
+        category: (c ?? normalizedCategory) || null,
+        tag: (t ?? normalizedTag) || null
       }
-    });
+    }, { status: 200 });
   } catch (err) {
     console.error('GET /api/workflows failed', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
