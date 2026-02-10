@@ -9,9 +9,128 @@
       "name": "App directory exists",
       "type": "file_exists",
       "path": "app"
+    },
+    {
+      "name": "No TODO markers in source",
+      "type": "no_markers",
+      "path": "app"
     }
   ],
   "validation_commands": [
     ["npm", "run", "build"]
+  ],
+  "feature_tasks": [
+    {
+      "id": "storage-layer",
+      "name": "File-backed JSON storage layer",
+      "description": "Implement lib/store.js with atomic read/write for workflows, proposals, approvals, receipts. Functions: getWorkflows, getWorkflowBySlug, getProposals, getProposalById, createProposal, updateProposal, getApprovals, getApprovalByProposalId, createApproval, getReceipts, getReceiptByProposalId, createReceipt.",
+      "required_files": ["lib/store.js"],
+      "check_patterns": ["getWorkflows", "createProposal", "createApproval", "createReceipt", "readFileSync", "writeFileSync"]
+    },
+    {
+      "id": "seed-workflows",
+      "name": "Seed 5 realistic workflows with schemas",
+      "description": "Create data/workflows.json with 5 workflows: bug-triage, weekly-status, qa-checklist, onboarding-guide, incident-summary. Each has id, slug, name, description, category, tags, icon, inputs_schema with typed fields.",
+      "required_files": ["data/workflows.json"],
+      "check_patterns": ["bug-triage", "weekly-status", "qa-checklist", "onboarding-guide", "incident-summary", "inputs_schema"]
+    },
+    {
+      "id": "input-validation",
+      "name": "Input validation against workflow schema",
+      "description": "Implement lib/validate.js that validates input_payload against workflow inputs_schema. Check required fields, string types, minLength, enum options, boolean. Return { valid, errors[] }.",
+      "required_files": ["lib/validate.js"],
+      "check_patterns": ["validateInputs", "valid", "errors"]
+    },
+    {
+      "id": "simulator",
+      "name": "Deterministic workflow simulator",
+      "description": "Implement lib/simulator.js with simulateExecution(workflow, proposal) producing deterministic outputs for each workflow type. Also createSignedIntent(proposal, approval) producing SHA-256 signed canonical JSON.",
+      "required_files": ["lib/simulator.js"],
+      "check_patterns": ["simulateExecution", "createSignedIntent", "sha256", "output_payload"]
+    },
+    {
+      "id": "api-workflows",
+      "name": "Workflows API endpoints",
+      "description": "GET /api/workflows with search/category/tag filtering. GET /api/workflows/[slug] with 404 handling.",
+      "required_files": ["app/api/workflows/route.js", "app/api/workflows/[slug]/route.js"],
+      "check_patterns": ["getWorkflows", "getWorkflowBySlug", "NextResponse"]
+    },
+    {
+      "id": "api-proposals",
+      "name": "Proposals API endpoints",
+      "description": "POST /api/proposals creates proposal with schema validation. GET /api/proposals lists with optional status filter. GET /api/proposals/[id] returns proposal with linked approval/receipt.",
+      "required_files": ["app/api/proposals/route.js", "app/api/proposals/[id]/route.js"],
+      "check_patterns": ["createProposal", "validateInputs", "getProposals", "getProposalById"]
+    },
+    {
+      "id": "api-approvals",
+      "name": "Approvals API with simulator integration",
+      "description": "POST /api/approvals accepts proposal_id, decision, rationale. Enforces state machine (pending only), rationale min 10 chars, idempotency. On approve: simulate execution, create receipt, update proposal to executed.",
+      "required_files": ["app/api/approvals/route.js"],
+      "check_patterns": ["createApproval", "simulateExecution", "createReceipt", "updateProposal", "rationale"]
+    },
+    {
+      "id": "api-receipts-metrics",
+      "name": "Receipts and Metrics API endpoints",
+      "description": "GET /api/receipts returns all receipts sorted by date. GET /api/metrics returns aggregate counts, approval rate, breakdown by workflow.",
+      "required_files": ["app/api/receipts/route.js", "app/api/metrics/route.js"],
+      "check_patterns": ["getReceipts", "approval_rate", "by_workflow"]
+    },
+    {
+      "id": "layout-nav",
+      "name": "Shared layout with sticky navigation",
+      "description": "app/layout.js with sticky top nav bar showing brand (⚡ Workflow Marketplace), nav links (Catalog, Approvals, Receipts, Metrics). Import globals.css.",
+      "required_files": ["app/layout.js"],
+      "check_patterns": ["topnav", "Catalog", "Approvals", "Receipts", "Metrics", "globals.css"]
+    },
+    {
+      "id": "page-catalog",
+      "name": "Catalog page with search and filtering",
+      "description": "app/page.js: client-side catalog with search bar, category filter chips, workflow card grid. Cards show icon, name, description, category badge, View CTA. Empty state when no results.",
+      "required_files": ["app/page.js"],
+      "check_patterns": ["use client", "search", "category", "workflow-card", "card-grid", "fetchWorkflows"]
+    },
+    {
+      "id": "page-workflow-detail",
+      "name": "Workflow detail page with dynamic run form",
+      "description": "app/workflows/[slug]/page.js: Shows workflow info, renders inputs_schema as dynamic form with field types (text, textarea, select, checkbox), validation, submit creates proposal. Success state with proposal ID.",
+      "required_files": ["app/workflows/[slug]/page.js"],
+      "check_patterns": ["use client", "form", "handleSubmit", "input_payload", "workflow_slug", "renderField"]
+    },
+    {
+      "id": "page-approvals",
+      "name": "Approval queue with decision modal",
+      "description": "app/approvals/page.js: Filterable list of proposals with status badges, table layout, approve/reject buttons. Modal with rationale textarea (min 10 chars). Status filter chips.",
+      "required_files": ["app/approvals/page.js"],
+      "check_patterns": ["use client", "handleDecision", "rationale", "Approve", "Reject", "badge"]
+    },
+    {
+      "id": "page-proposal-detail",
+      "name": "Proposal detail page with audit info",
+      "description": "app/approvals/[id]/page.js: Shows proposal info, input payload (JSON viewer), approval decision details, receipt output if executed. Grid layout.",
+      "required_files": ["app/approvals/[id]/page.js"],
+      "check_patterns": ["use client", "proposal", "approval", "receipt", "json-viewer"]
+    },
+    {
+      "id": "page-receipts",
+      "name": "Receipts log with expandable payloads",
+      "description": "app/receipts/page.js: List of receipts with expand/collapse for output payload. Shows run status, signed intent hash, timestamps.",
+      "required_files": ["app/receipts/page.js"],
+      "check_patterns": ["use client", "receipts", "output_payload", "signed_intent", "expanded"]
+    },
+    {
+      "id": "page-metrics",
+      "name": "Metrics dashboard with KPI cards",
+      "description": "app/metrics/page.js: KPI cards for total proposals, pending, approval rate, executed, rejected, total receipts. Table breakdown by workflow.",
+      "required_files": ["app/metrics/page.js"],
+      "check_patterns": ["use client", "metric-card", "metric-value", "approval_rate", "by_workflow"]
+    },
+    {
+      "id": "styling",
+      "name": "Premium CSS design system",
+      "description": "app/globals.css with complete design system: CSS variables for colors/spacing, topnav styles, card/card-grid, badges (pending/approved/rejected/executed), buttons, forms, tables, metric cards, search bar, JSON viewer, empty states, responsive breakpoints.",
+      "required_files": ["app/globals.css"],
+      "check_patterns": ["--color-accent", "topnav", "card-grid", "badge-pending", "badge-approved", "btn-primary", "form-input", "metric-card", "json-viewer", "empty-state"]
+    }
   ]
 }

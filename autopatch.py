@@ -184,16 +184,48 @@ def file_snapshot(path: Path, max_chars: int = 3000) -> str:
 
 
 def context_for_task(task: dict) -> str:
-    """Build file context relevant to the current task."""
+    """Build file context relevant to the current task.
+
+    Marketplace-aware: includes related files for consistency.
+    - API tasks see the storage layer and related data schemas
+    - UI page tasks see globals.css and layout.js for consistent styling
+    - All tasks see lib/ files to reuse existing patterns
+    """
+    seen = set()
     chunks = []
+
+    def add(rel_path: str, max_chars: int = 4000):
+        if rel_path in seen:
+            return
+        seen.add(rel_path)
+        chunks.append(file_snapshot(ROOT / rel_path, max_chars=max_chars))
+
+    # 1) Required files for this task
     for rel_path in task.get("required_files", []):
-        chunks.append(file_snapshot(ROOT / rel_path, max_chars=4000))
-    # Auto-detect and include likely dependency files
-    for pattern in ["lib/*.js", "lib/*.py", "lib/*.ts", "src/lib/*", "utils/*"]:
-        for p in ROOT.glob(pattern):
-            rel = str(p.relative_to(ROOT))
-            if rel not in task.get("required_files", []):
-                chunks.append(file_snapshot(p, max_chars=2000))
+        add(rel_path)
+
+    # 2) All lib/ files — storage layer, validator, simulator
+    for p in sorted(ROOT.glob("lib/*.js")):
+        add(str(p.relative_to(ROOT)), 3000)
+
+    # 3) For UI page tasks: include layout + globals.css for style consistency
+    task_id = task.get("id", "")
+    if task_id.startswith("page-") or task_id in ("layout-nav", "styling"):
+        add("app/layout.js", 3000)
+        add("app/globals.css", 5000)
+        # Also include an existing page as style reference
+        for ref in ["app/page.js", "app/approvals/page.js"]:
+            if (ROOT / ref).exists() and ref not in task.get("required_files", []):
+                add(ref, 3000)
+                break
+
+    # 4) For API tasks: include a seed data file for schema reference
+    if task_id.startswith("api-"):
+        add("data/workflows.json", 2000)
+
+    # 5) Always include package.json for dependency awareness
+    add("package.json", 500)
+
     return "\n\n".join(chunks) if chunks else "No existing files found."
 
 
