@@ -1,8 +1,9 @@
 {
   "completed_tasks": [],
   "failed_tasks": {
-    "ui-css-foundations": 1
+    "ui-css-foundations": 1,
+    "ui-catalog-polish": 1
   },
-  "cycle_count": 2,
-  "last_focus": "ui-css-foundations"
+  "cycle_count": 3,
+  "last_focus": "ui-catalog-polish"
 }
