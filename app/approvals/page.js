@@ -1,41 +1,71 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function ApprovalsPage() {
   const [proposals, setProposals] = useState([]);
   const [filter, setFilter] = useState('pending');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [actionModal, setActionModal] = useState(null);
   const [rationale, setRationale] = useState('');
   const [acting, setActing] = useState(false);
 
-  useEffect(() => {
-    fetchProposals();
+  const fetchProposals = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = filter ? `?status=${filter}` : '';
+      const res = await fetch(`/api/proposals${params}`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch proposals (${res.status})`);
+      }
+      const data = await res.json();
+      setProposals(data.proposals || []);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
   }, [filter]);
 
-  async function fetchProposals() {
-    setLoading(true);
-    const params = filter ? `?status=${filter}` : '';
-    const res = await fetch(`/api/proposals${params}`);
-    const data = await res.json();
-    setProposals(data.proposals || []);
-    setLoading(false);
-  }
+  useEffect(() => {
+    fetchProposals();
+  }, [fetchProposals]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!actionModal) return;
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        setActionModal(null);
+        setRationale('');
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [actionModal]);
 
   async function handleDecision(proposalId, decision) {
     if (rationale.length < 10) return;
     setActing(true);
-    await fetch('/api/approvals', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        proposal_id: proposalId,
-        decision,
-        approved_by: 'operator@local',
-        rationale,
-      }),
-    });
+    try {
+      const res = await fetch('/api/approvals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposal_id: proposalId,
+          decision,
+          approved_by: 'operator@local',
+          rationale,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to submit decision (${res.status})`);
+      }
+    } catch (e) {
+      setError(e.message);
+    }
     setActionModal(null);
     setRationale('');
     setActing(false);
@@ -43,6 +73,19 @@ export default function ApprovalsPage() {
   }
 
   const statusFilters = ['pending', 'approved', 'rejected', 'executed', ''];
+
+  const skeletonRows = Array.from({ length: 5 }, (_, i) => (
+    <tr key={`skeleton-${i}`}>
+      <td>
+        <div className="skeleton skeleton-text mb-16" />
+        <div className="skeleton skeleton-text-short" />
+      </td>
+      <td><div className="skeleton skeleton-text-short" /></td>
+      <td><div className="skeleton skeleton-badge" /></td>
+      <td><div className="skeleton skeleton-text-short" /></td>
+      <td><div className="skeleton skeleton-button" /></td>
+    </tr>
+  ));
 
   return (
     <div>
@@ -55,7 +98,7 @@ export default function ApprovalsPage() {
         {statusFilters.map(s => (
           <button
             key={s || 'all'}
-            className={`chip ${filter === s ? 'active' : ''}`}
+            className={`chip${filter === s ? ' active' : ''}`}
             onClick={() => setFilter(s)}
           >
             {s || 'All'}
@@ -63,11 +106,41 @@ export default function ApprovalsPage() {
         ))}
       </div>
 
+      {error && (
+        <div className="error-banner mb-24">
+          <div className="error-banner-icon">&#9888;</div>
+          <div className="error-banner-content">
+            <div className="error-banner-heading">Error</div>
+            <div className="error-banner-message">{error}</div>
+          </div>
+          <button className="btn btn-outline" onClick={() => { setError(null); fetchProposals(); }}>
+            Retry
+          </button>
+        </div>
+      )}
+
       {loading ? (
-        <div className="empty-state"><p>Loading proposals...</p></div>
+        <div className="card">
+          <div className="table-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Workflow</th>
+                  <th>Created By</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {skeletonRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
       ) : proposals.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">📋</div>
+          <div className="empty-state-icon">&#128203;</div>
           <h3>No proposals found</h3>
           <p>{filter === 'pending' ? 'No pending proposals to review. All clear!' : 'Try changing the filter.'}</p>
         </div>
@@ -98,15 +171,13 @@ export default function ApprovalsPage() {
                       {p.status === 'pending' ? (
                         <div className="flex gap-8">
                           <button
-                            className="btn btn-success"
-                            style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                            className="btn btn-success btn-sm"
                             onClick={() => setActionModal({ id: p.id, decision: 'approved' })}
                           >
                             Approve
                           </button>
                           <button
-                            className="btn btn-danger"
-                            style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                            className="btn btn-danger btn-sm"
                             onClick={() => setActionModal({ id: p.id, decision: 'rejected' })}
                           >
                             Reject
@@ -115,8 +186,7 @@ export default function ApprovalsPage() {
                       ) : (
                         <a
                           href={`/approvals/${p.id}`}
-                          className="btn btn-outline"
-                          style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                          className="btn btn-outline btn-sm"
                         >
                           View
                         </a>
@@ -131,17 +201,23 @@ export default function ApprovalsPage() {
       )}
 
       {actionModal && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200,
-        }}>
-          <div className="card" style={{ maxWidth: 480, width: '90%' }}>
-            <h3 style={{ marginBottom: 16 }}>
-              {actionModal.decision === 'approved' ? '✅ Approve' : '❌ Reject'} Proposal
+        <div
+          className="modal-backdrop"
+          onClick={() => { setActionModal(null); setRationale(''); }}
+        >
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="mb-16">
+              {actionModal.decision === 'approved' ? 'Approve' : 'Reject'} Proposal
             </h3>
             <div className="form-group">
-              <label className="form-label">Rationale (min 10 characters)</label>
+              <label className="form-label" htmlFor="rationale-textarea">
+                Rationale (min 10 characters)
+              </label>
               <textarea
+                id="rationale-textarea"
                 className="form-textarea"
                 placeholder="Explain your decision..."
                 value={rationale}
@@ -151,7 +227,7 @@ export default function ApprovalsPage() {
                 <div className="form-error">At least 10 characters required</div>
               )}
             </div>
-            <div className="flex gap-12" style={{ justifyContent: 'flex-end' }}>
+            <div className="flex gap-12 justify-end">
               <button className="btn btn-outline" onClick={() => { setActionModal(null); setRationale(''); }}>
                 Cancel
               </button>

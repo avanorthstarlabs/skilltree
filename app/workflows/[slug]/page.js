@@ -1,20 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 export default function WorkflowDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [workflow, setWorkflow] = useState(null);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState([]);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(null);
 
-  useEffect(() => {
+  const fetchWorkflow = useCallback(() => {
+    setError(null);
+    setWorkflow(null);
     fetch(`/api/workflows/${params.slug}`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Failed to load workflow (${r.status})`);
+        return r.json();
+      })
       .then(data => {
         setWorkflow(data.workflow);
         if (data.workflow?.inputs_schema?.properties) {
@@ -24,13 +31,53 @@ export default function WorkflowDetailPage() {
           }
           setFormData(defaults);
         }
+      })
+      .catch(e => {
+        setError(e.message);
       });
   }, [params.slug]);
+
+  useEffect(() => {
+    fetchWorkflow();
+  }, [fetchWorkflow]);
+
+  function validateFields() {
+    const schema = workflow.inputs_schema;
+    const properties = schema?.properties || {};
+    const required = schema?.required || [];
+    const newFieldErrors = {};
+
+    for (const key of required) {
+      const val = formData[key];
+      if (val === undefined || val === null || val === '') {
+        const prop = properties[key];
+        const label = prop?.label || key;
+        newFieldErrors[key] = `${label} is required`;
+      }
+    }
+
+    for (const [key, prop] of Object.entries(properties)) {
+      if (newFieldErrors[key]) continue;
+      const val = formData[key];
+      if (prop.minLength && typeof val === 'string' && val.length > 0 && val.length < prop.minLength) {
+        newFieldErrors[key] = `Minimum ${prop.minLength} characters required`;
+      }
+    }
+
+    setFieldErrors(newFieldErrors);
+    return Object.keys(newFieldErrors).length === 0;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
     setErrors([]);
+    setFieldErrors({});
+
+    if (!validateFields()) {
+      setSubmitting(false);
+      return;
+    }
 
     const res = await fetch('/api/proposals', {
       method: 'POST',
@@ -59,6 +106,7 @@ export default function WorkflowDetailPage() {
     if (prop.type === 'enum' && prop.options) {
       return (
         <select
+          id={`field-${key}`}
           className="form-select"
           value={value}
           onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
@@ -73,8 +121,9 @@ export default function WorkflowDetailPage() {
 
     if (prop.type === 'boolean') {
       return (
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+        <label className="checkbox-label" htmlFor={`field-${key}`}>
           <input
+            id={`field-${key}`}
             type="checkbox"
             checked={!!value}
             onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
@@ -87,6 +136,7 @@ export default function WorkflowDetailPage() {
     if (prop.multiline) {
       return (
         <textarea
+          id={`field-${key}`}
           className="form-textarea"
           placeholder={prop.placeholder || ''}
           value={value}
@@ -97,6 +147,7 @@ export default function WorkflowDetailPage() {
 
     return (
       <input
+        id={`field-${key}`}
         type="text"
         className="form-input"
         placeholder={prop.placeholder || ''}
@@ -106,29 +157,73 @@ export default function WorkflowDetailPage() {
     );
   }
 
-  if (!workflow) {
-    return <div className="empty-state"><p>Loading workflow...</p></div>;
+  // Loading state: skeleton placeholders
+  if (!workflow && !error) {
+    return (
+      <div className="workflow-detail-skeleton">
+        <div className="page-header">
+          <div className="skeleton-detail-header">
+            <div className="skeleton skeleton-detail-icon"></div>
+            <div>
+              <div className="skeleton skeleton-detail-title"></div>
+              <div className="skeleton skeleton-detail-subtitle"></div>
+            </div>
+          </div>
+          <div className="skeleton skeleton-text"></div>
+        </div>
+        <div className="card card-narrow workflow-detail-skeleton-card">
+          <div className="skeleton skeleton-text mb-24"></div>
+          <div className="form-group">
+            <div className="skeleton skeleton-form-label"></div>
+            <div className="skeleton skeleton-form-input"></div>
+          </div>
+          <div className="form-group">
+            <div className="skeleton skeleton-form-label"></div>
+            <div className="skeleton skeleton-form-input"></div>
+          </div>
+          <div className="form-group">
+            <div className="skeleton skeleton-form-label"></div>
+            <div className="skeleton skeleton-form-input"></div>
+          </div>
+          <div className="skeleton skeleton-button"></div>
+        </div>
+      </div>
+    );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="error-banner">
+        <div className="error-banner-icon">!</div>
+        <div className="error-banner-content">
+          <div className="error-banner-heading">Failed to Load Workflow</div>
+          <div className="error-banner-message">{error}</div>
+        </div>
+        <button className="btn btn-outline" onClick={fetchWorkflow}>Retry</button>
+      </div>
+    );
+  }
+
+  // Success / submitted state
   if (submitted) {
     return (
-      <div>
-        <div className="page-header">
-          <h1>Proposal Submitted</h1>
-          <p>Your run request has been submitted for approval.</p>
-        </div>
-        <div className="card" style={{ maxWidth: 600 }}>
-          <div className="flex items-center gap-12 mb-16">
+      <div className="empty-state">
+        <div className="success-checkmark">&#10003;</div>
+        <h1 className="empty-state-heading">Proposal Submitted</h1>
+        <p className="empty-state-description">Your run request has been submitted for approval.</p>
+        <div className="card success-detail-card">
+          <div className="success-detail-row">
             <span className="workflow-icon">{workflow.icon}</span>
             <div>
-              <div className="font-semibold">{workflow.name}</div>
+              <div className="success-workflow-name">{workflow.name}</div>
               <span className="badge badge-pending">Pending Approval</span>
             </div>
           </div>
-          <p className="text-sm text-muted mb-16">
+          <p className="success-proposal-id">
             Proposal ID: <code>{submitted.id}</code>
           </p>
-          <div className="flex gap-12">
+          <div className="success-actions">
             <a href="/approvals" className="btn btn-primary">Go to Approvals</a>
             <a href="/" className="btn btn-outline">Back to Catalog</a>
           </div>
@@ -143,14 +238,14 @@ export default function WorkflowDetailPage() {
   return (
     <div>
       <div className="page-header">
-        <div className="flex items-center gap-16 mb-16">
-          <span style={{ fontSize: '2.5rem' }}>{workflow.icon}</span>
+        <div className="workflow-detail-title-row">
+          <span className="workflow-icon">{workflow.icon}</span>
           <div>
             <h1>{workflow.name}</h1>
-            <div className="flex items-center gap-8 mt-8">
+            <div className="workflow-detail-badges mt-8">
               <span className="badge badge-executed">{workflow.category}</span>
               {workflow.tags.map(t => (
-                <span key={t} className="chip" style={{ cursor: 'default' }}>{t}</span>
+                <span key={t} className="chip">{t}</span>
               ))}
             </div>
           </div>
@@ -158,20 +253,16 @@ export default function WorkflowDetailPage() {
         <p>{workflow.description}</p>
       </div>
 
-      <div className="card" style={{ maxWidth: 640 }}>
-        <h2 style={{ fontSize: '1.125rem', marginBottom: 24 }}>Configure & Submit Run</h2>
+      <div className="card card-narrow">
+        <h2 className="section-title">Configure &amp; Submit Run</h2>
 
         {errors.length > 0 && (
-          <div style={{
-            background: 'var(--color-rejected-bg)',
-            border: '1px solid var(--color-rejected)',
-            borderRadius: 'var(--radius)',
-            padding: '12px 16px',
-            marginBottom: 20,
-          }}>
-            {errors.map((err, i) => (
-              <div key={i} className="text-sm" style={{ color: 'var(--color-rejected)' }}>{err}</div>
-            ))}
+          <div className="card form-error-banner">
+            <ul className="error-banner-list">
+              {errors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ul>
           </div>
         )}
 
@@ -179,12 +270,15 @@ export default function WorkflowDetailPage() {
           {Object.entries(properties).map(([key, prop]) => (
             <div key={key} className="form-group">
               {prop.type !== 'boolean' && (
-                <label className="form-label">
+                <label className="form-label" htmlFor={`field-${key}`}>
                   {prop.label || key}
-                  {schema.required?.includes(key) && <span style={{ color: 'var(--color-rejected)' }}> *</span>}
+                  {schema.required?.includes(key) && <span className="required-asterisk"> *</span>}
                 </label>
               )}
               {renderField(key, prop)}
+              {fieldErrors[key] && (
+                <div className="field-error">{fieldErrors[key]}</div>
+              )}
               {prop.minLength && (
                 <div className="form-hint">Minimum {prop.minLength} characters</div>
               )}
@@ -192,9 +286,8 @@ export default function WorkflowDetailPage() {
           ))}
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn btn-primary mt-8"
             disabled={submitting}
-            style={{ marginTop: 8 }}
           >
             {submitting ? 'Submitting...' : 'Submit Run Proposal'}
           </button>
