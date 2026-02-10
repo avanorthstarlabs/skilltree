@@ -621,18 +621,46 @@ First line MUST be: diff --git a/... b/...
     diff_path = LOGS / f"{ROOT.name}_patch_{ts}.diff"
     diff_path.write_text(diff, encoding="utf-8")
 
+    apply_ok = False
     try:
         sh(["git", "apply", "--recount", "--3way", "--whitespace=nowarn", str(diff_path)], cwd=ROOT)
+        apply_ok = True
     except subprocess.CalledProcessError:
         try:
-            sh(["git", "apply", "--recount", "--whitespace=nowarn", str(diff_path)], cwd=ROOT)
-        except subprocess.CalledProcessError as e:
-            log_event("apply", "error", str(e))
-            fails = progress.get("failed_tasks", {})
-            fails[focus_id] = fails.get(focus_id, 0) + 1
-            progress["failed_tasks"] = fails
-            save_progress(progress)
-            raise
+            sh(["git", "apply", "--recount", "-C0", "--whitespace=nowarn", str(diff_path)], cwd=ROOT)
+            apply_ok = True
+        except subprocess.CalledProcessError:
+            # Try applying each file hunk separately — partial success is better than none
+            current_hunk = []
+            hunks = []
+            for line in diff.splitlines(keepends=True):
+                if line.startswith("diff --git ") and current_hunk:
+                    hunks.append("".join(current_hunk))
+                    current_hunk = []
+                current_hunk.append(line)
+            if current_hunk:
+                hunks.append("".join(current_hunk))
+            applied_count = 0
+            for i, hunk in enumerate(hunks):
+                hunk_path = LOGS / f"{ROOT.name}_patch_{ts}_part{i}.diff"
+                hunk_path.write_text(hunk, encoding="utf-8")
+                try:
+                    sh(["git", "apply", "--recount", "-C0", "--whitespace=nowarn", str(hunk_path)], cwd=ROOT, check=True)
+                    applied_count += 1
+                except subprocess.CalledProcessError:
+                    pass
+            if applied_count > 0:
+                log_event("apply", "partial", f"Applied {applied_count}/{len(hunks)} file diffs")
+                apply_ok = True
+            else:
+                log_event("apply", "error", f"All {len(hunks)} hunks failed to apply")
+    if not apply_ok:
+        fails = progress.get("failed_tasks", {})
+        fails[focus_id] = fails.get(focus_id, 0) + 1
+        progress["failed_tasks"] = fails
+        save_progress(progress)
+        print(f"FAILED: Could not apply diff for '{focus['name']}'")
+        sys.exit(1)
 
     # Build verify
     build_ok, build_output = verify_build()
