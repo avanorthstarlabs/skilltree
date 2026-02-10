@@ -6,10 +6,9 @@
   ],
   "failed_tasks": {
     "ui-css-foundations": 2,
-    "ui-detail-polish": 1,
     "ui-approvals-polish": 1,
     "ui-metrics-polish": 1
   },
-  "cycle_count": 10,
-  "last_focus": "ui-catalog-polish"
+  "cycle_count": 11,
+  "last_focus": "ui-detail-polish"
 }
