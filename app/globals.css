@@ -398,7 +398,6 @@ body {
 
 .table th {
   font-weight: 600;
-.skeleton-label { height: 14px; width: 30%; border-radius: 4px; margin-bottom: 6px; }
   color: var(--color-text-secondary);
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -534,6 +533,8 @@ body {
 .success-actions {
   display: flex;
   gap: 12px;
+.skeleton-label { height: 14px; width: 30%; border-radius: 4px; margin-bottom: 6px; }
+.skeleton-input { height: 40px; width: 100%; border-radius: var(--radius); }
 }
 
   min-height: 120px;
