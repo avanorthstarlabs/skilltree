@@ -420,6 +420,7 @@ body {
   font-size: 1.125rem;
 }
 
+.flex-col { flex-direction: column; }
 /* ===== Status Timeline ===== */
 .timeline {
   display: flex;
@@ -428,6 +429,91 @@ body {
 }
 
 .timeline-item {
+
+/* ===== Button Sizes ===== */
+.btn-sm {
+  font-size: 0.8125rem;
+  padding: 6px 14px;
+}
+
+/* ===== Skeleton Loading ===== */
+@keyframes skeleton-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.skeleton {
+  background: var(--color-border);
+  border-radius: var(--radius);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-text {
+  height: 16px;
+  width: 200px;
+}
+
+.skeleton-text-short {
+  height: 14px;
+  width: 120px;
+}
+
+.skeleton-badge {
+  height: 24px;
+  width: 72px;
+  border-radius: 20px;
+}
+
+.skeleton-button {
+  height: 32px;
+  width: 130px;
+  border-radius: var(--radius);
+}
+
+.skeleton-title {
+  height: 20px;
+  width: 240px;
+}
+
+.skeleton-card {
+  height: 160px;
+  border-radius: var(--radius-lg);
+}
+
+/* ===== Focus Visible ===== */
+.btn:focus-visible,
+.chip:focus-visible,
+.nav-link:focus-visible,
+.form-input:focus-visible,
+.form-textarea:focus-visible,
+.form-select:focus-visible,
+.search-input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ===== Modal ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 480px;
+  width: 100%;
+  padding: 24px;
+  position: relative;
+}
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -462,6 +548,15 @@ body {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   line-height: 1.6;
+}
+
+/* ===== Inline Code ===== */
+.code-inline {
+  background: var(--color-bg);
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  word-break: break-all;
+  font-family: var(--font-mono);
 }
 
 /* ===== Empty State ===== */
@@ -519,6 +614,13 @@ body {
 .error-state p {
   margin-bottom: 20px;
   font-size: 0.875rem;
+}
+
+/* ===== Page Title ===== */
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 /* ===== Utility ===== */

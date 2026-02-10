@@ -28,3 +28,6 @@
 ## 2026-02-10T05:58:20.933756+00:00
 - Proposal detail page: loading, error, grid layout, no inline styles: workflow-marketplace_patch_2026-02-10T05-58-10.921635+00-00.diff
 
+## 2026-02-10T05:59:13.080642+00:00
+- Receipts page: loading, error, no raw hex colors, no inline styles: workflow-marketplace_patch_2026-02-10T05-59-03.138136+00-00.diff
+
