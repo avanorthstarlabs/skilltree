@@ -12,7 +12,14 @@
       "page-proposal-detail",
       "page-receipts",
       "page-metrics",
-      "styling"
+      "styling",
+      "ui-css-foundations",
+      "ui-catalog-polish",
+      "ui-detail-polish",
+      "ui-approvals-polish",
+      "ui-proposal-detail-polish",
+      "ui-receipts-polish",
+      "ui-metrics-polish"
     ],
     "openai": [
       "storage-layer",
