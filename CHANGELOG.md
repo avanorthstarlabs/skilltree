@@ -34,3 +34,6 @@
 ## 2026-02-10T06:03:49.174036+00:00
 - Catalog page: loading skeleton, error state, no inline styles: workflow-marketplace_patch_2026-02-10T06-03-39.131719+00-00.diff
 
+## 2026-02-10T06:05:06.509354+00:00
+- Workflow detail page: loading, error, form labels, no inline styles: workflow-marketplace_patch_2026-02-10T06-04-56.624738+00-00.diff
+

@@ -367,6 +367,12 @@ body {
   margin-top: 4px;
 }
 
+.field-error {
+  font-size: 0.75rem;
+  color: var(--color-rejected);
+  margin-top: 4px;
+}
+
 /* ===== Tables ===== */
 .table-container {
   overflow-x: auto;
@@ -537,6 +543,18 @@ body {
   margin-bottom: 24px;
 }
 
+/* ===== Checkbox Group ===== */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  cursor: pointer;
+}
+
 /* ===== Skeleton Loading ===== */
 @keyframes skeleton-pulse {
   0% { opacity: 1; }
@@ -571,6 +589,45 @@ body {
   height: 24px;
   width: 72px;
   border-radius: 20px;
+}
+
+.skeleton-detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.skeleton-detail-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+}
+
+.skeleton-detail-title {
+  height: 28px;
+  width: 240px;
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+
+.skeleton-detail-subtitle {
+  height: 16px;
+  width: 360px;
+  border-radius: var(--radius);
+}
+
+.skeleton-form-label {
+  height: 14px;
+  width: 120px;
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+
+.skeleton-form-input {
+  height: 42px;
+  width: 100%;
+  border-radius: var(--radius);
 }
 
 .skeleton-button {
@@ -869,6 +926,28 @@ a:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+.card-constrained {
+  max-width: 600px;
+}
+
+/* ===== Success State ===== */
+.success-checkmark {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+/* ===== Required Asterisk ===== */
+.required-asterisk {
+  color: var(--color-accent);
+  margin-left: 2px;
+}
+
+/* ===== Form Errors List ===== */
+.form-errors-list {
+  margin-bottom: 20px;
 }
 
 /* ===== Responsive ===== */
