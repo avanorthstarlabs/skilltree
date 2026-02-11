@@ -21,19 +21,123 @@ If a component wouldn't look right on those products, it doesn't ship here.
 
 ---
 
+## 1b. Page Composition Patterns (VISUAL IMPACT)
+
+Every application must look investment-worthy. The following patterns are MANDATORY for the landing/home page and STRONGLY RECOMMENDED for all pages.
+
+### Hero Section (REQUIRED on home/landing page)
+The hero is the first thing a user sees. It must create immediate visual impact.
+
+```
+Structure:
+┌─────────────────────────────────────────────────────────────┐
+│  .hero (dark gradient bg: navy → indigo → navy)             │
+│                                                             │
+│  [eyebrow pill: "● Status text"]                           │
+│                                                             │
+│  Large Headline (3rem, 800 weight)          [Floating       │
+│  with gradient-colored accent text           visual:        │
+│                                              pipeline       │
+│  Subtitle paragraph (muted, 1.125rem)        steps or      │
+│                                              card stack]    │
+│  [CTA Primary]  [CTA Secondary]                            │
+│                                                             │
+│  ::before — radial gradient glow (top-right)               │
+│  ::after — radial gradient glow (bottom-left)              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Rules:**
+- Background: `linear-gradient(135deg, #0f0f1a 0%, #1a1a3e 40%, #2d1b69 70%, #0f0f1a 100%)`
+- Decorative glows: `radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent)` positioned with `::before`/`::after`
+- Headline: `3rem`, weight 800, letter-spacing `-0.035em`, white text
+- Gradient text: `background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text;`
+- Eyebrow: pill shape, `rgba(255,255,255,0.08)` bg, pulsing green dot
+- CTA Primary: accent bg with colored shadow (`0 2px 12px rgba(99, 102, 241, 0.4)`)
+- CTA Secondary: ghost style with `rgba(255,255,255,0.06)` bg, subtle border
+- Floating visual: glassmorphism cards with `backdrop-filter: blur(12px)`, staggered animation
+- Border-radius: `--radius-xl` (16px)
+- Padding: `72px 48px`
+- Responsive: hide floating visual below 1024px, reduce headline to 2.25rem
+
+### Stats Bar (REQUIRED on home/landing page)
+Live metrics displayed in a horizontal grid below the hero.
+
+```
+┌──────────┬──────────┬──────────┬──────────┐
+│   42     │   96%    │    3     │   18     │
+│ PROPOSALS│ APPROVAL │ PENDING  │ EXECUTED │
+└──────────┴──────────┴──────────┴──────────┘
+```
+
+**Rules:**
+- Grid: `repeat(4, 1fr)` with 1px gap (border shows through as separator)
+- Values: `1.75rem`, weight 800, letter-spacing `-0.03em`
+- Labels: `0.6875rem`, uppercase, letter-spacing `0.06em`, secondary color
+- Color-code values: accent for totals, green for rates, amber for pending
+- Card background: white surface, no individual borders (gap creates the lines)
+- Border-radius on outer container: `--radius-lg`
+
+### Feature Cards (REQUIRED on home/landing page)
+Three cards explaining core value propositions.
+
+```
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ [colored icon]  │ │ [colored icon]  │ │ [colored icon]  │
+│                 │ │                 │ │                 │
+│ Bold Title      │ │ Bold Title      │ │ Bold Title      │
+│                 │ │                 │ │                 │
+│ Description     │ │ Description     │ │ Description     │
+│ text here...    │ │ text here...    │ │ text here...    │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+```
+
+**Rules:**
+- Grid: `repeat(3, 1fr)` with 16px gap
+- Icon: 44x44px container with `border-radius: 12px`, colored background (10% opacity of accent)
+- Title: `0.9375rem`, weight 600, letter-spacing `-0.01em`
+- Description: `0.8125rem`, secondary color, line-height 1.6
+- Hover: accent border + medium shadow
+- Responsive: single column below 1024px
+
+### Gradient Accents (USE EVERYWHERE)
+- **Card top-border:** 3px `linear-gradient(90deg, #6366f1, #8b5cf6)`, hidden by default, shown on hover
+- **Nav brand icon:** gradient background pill
+- **Metric card top:** permanent 3px gradient bar
+- **Modal animations:** fadeIn + slideUp (not instant)
+- **Skeleton loading:** shimmer (gradient sliding left-to-right), NOT pulse
+
+### Page Composition Order
+For any app's home/landing page, the section order MUST be:
+1. Hero section (dark, full-width within content area)
+2. Stats bar (live metrics)
+3. Feature cards (value propositions)
+4. Main content (catalog, table, dashboard, etc.)
+
+For interior pages (detail, form, settings), use:
+1. Page header (title + subtitle)
+2. Main content with appropriate loading/error/empty states
+
+---
+
 ## 2. Color Tokens
 
 ### Brand palette
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--color-bg` | `#f5f6fa` | Page background (light warm gray) |
+| `--color-bg` | `#f8f9fc` | Page background (light cool gray) |
+| `--color-bg-subtle` | `#f0f2f8` | Subtle backgrounds (table headers, icon containers) |
 | `--color-surface` | `#ffffff` | Card/panel backgrounds |
-| `--color-primary` | `#1a1a2e` | Nav background, headings, primary text |
-| `--color-accent` | `#4361ee` | CTAs, links, active states, focus rings |
-| `--color-accent-hover` | `#3651d4` | Hover state for accent elements |
-| `--color-text` | `#1a1a2e` | Body text (same as primary) |
+| `--color-primary` | `#0f0f1a` | Nav background, dark sections |
+| `--color-accent` | `#6366f1` | CTAs, links, active states, focus rings (Indigo) |
+| `--color-accent-hover` | `#4f46e5` | Hover state for accent elements |
+| `--color-accent-subtle` | `rgba(99, 102, 241, 0.08)` | Hover tint on rows, chips |
+| `--color-accent-glow` | `rgba(99, 102, 241, 0.15)` | Focus ring glow |
+| `--color-text` | `#111827` | Primary body text |
 | `--color-text-secondary` | `#6b7280` | Descriptions, hints, metadata |
+| `--color-text-tertiary` | `#9ca3af` | Placeholders, disabled text |
 | `--color-border` | `#e5e7eb` | Card borders, dividers, input borders |
+| `--color-border-subtle` | `#f3f4f6` | Subtle dividers, card footer borders |
 
 ### Status colors (semantic, never decorative)
 | Status | Foreground | Background | Text on bg |
@@ -55,19 +159,22 @@ If a component wouldn't look right on those products, it doesn't ship here.
 ## 3. Typography
 
 ### Font stacks
-- **Sans:** `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`
-- **Mono:** `'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace`
+- **Sans:** `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif` (load Inter from Google Fonts)
+- **Mono:** `'JetBrains Mono', 'SF Mono', 'Fira Code', monospace`
+- Enable `-webkit-font-smoothing: antialiased` on html
 
 ### Type scale (use these exactly, never invent sizes)
-| Name | Size | Weight | Usage |
-|------|------|--------|-------|
-| Page title | `1.75rem` | 700 | Page headings (`<h1>`) |
-| Section title | `1.25rem` | 700 | Section headers, card titles in detail views |
-| Card title | `1.125rem` | 600 | Card headings, modal titles |
-| Body | `0.875rem` | 400 | Default text, form inputs, table cells |
-| Body strong | `0.875rem` | 600 | Labels, table headers, bold inline text |
-| Caption | `0.75rem` | 500–600 | Badges, chips, timestamps, hints |
-| Metric value | `2.25rem` | 700 | KPI numbers |
+| Name | Size | Weight | Letter-spacing | Usage |
+|------|------|--------|---------------|-------|
+| Hero headline | `3rem` | 800 | `-0.035em` | Landing page hero `<h1>` |
+| Page title | `1.875rem` | 700 | `-0.025em` | Interior page headings (`<h1>`) |
+| Section title | `1rem` | 700 | `-0.01em` | Section headers, card section titles |
+| Card title | `1rem` | 600 | `-0.01em` | Card headings, modal titles |
+| Body | `0.875rem` | 400 | normal | Default text, form inputs, table cells |
+| Body strong | `0.875rem` | 600 | normal | Labels, table headers, bold inline text |
+| Caption | `0.75rem` | 500–600 | `0.04em` | Badges, chips, timestamps, hints |
+| Stat label | `0.6875rem` | 500 | `0.06em` | Uppercase metric labels, table headers |
+| Metric value | `2.5rem` | 800 | `-0.03em` | KPI numbers (stats bar, dashboard) |
 
 ### Rules
 - Line height: `1.6` for body, `1.2` for headings and metrics

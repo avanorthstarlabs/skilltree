@@ -34,9 +34,10 @@ export default function ProposalDetailPage() {
   if (loading) {
     return (
       <div>
-        <div className="page-header">
-          <div className="skeleton skeleton-title" />
-          <div className="skeleton skeleton-text" />
+        <div className="page-hero">
+          <div className="skeleton skeleton-badge skeleton-on-dark" />
+          <div className="skeleton skeleton-title skeleton-on-dark" />
+          <div className="skeleton skeleton-text skeleton-on-dark" />
         </div>
         <div className="detail-grid">
           <div className="card">
@@ -73,16 +74,22 @@ export default function ProposalDetailPage() {
   if (error) {
     return (
       <div>
-        <div className="page-header">
+        <div className="page-hero">
+          <div className="page-hero-eyebrow">
+            <span className="page-hero-eyebrow-dot" />
+            Proposal Audit Trail
+          </div>
           <h1 className="page-title">Proposal Detail</h1>
           <p>View proposal information and audit trail</p>
         </div>
-        <div className="error-state">
-          <div className="error-state-icon">⚠️</div>
-          <h3>Failed to Load Proposal</h3>
-          <p>{error}</p>
+        <div className="error-banner">
+          <div className="error-banner-icon">&#9888;</div>
+          <div className="error-banner-content">
+            <div className="error-banner-heading">Failed to Load Proposal</div>
+            <div className="error-banner-message">{error}</div>
+          </div>
           <button className="btn btn-primary" onClick={fetchProposal}>
-            Retry Loading
+            Retry
           </button>
         </div>
       </div>
@@ -92,12 +99,16 @@ export default function ProposalDetailPage() {
   if (!data?.proposal) {
     return (
       <div>
-        <div className="page-header">
+        <div className="page-hero">
+          <div className="page-hero-eyebrow">
+            <span className="page-hero-eyebrow-dot" />
+            Proposal Audit Trail
+          </div>
           <h1 className="page-title">Proposal Detail</h1>
           <p>View proposal information and audit trail</p>
         </div>
         <div className="empty-state">
-          <div className="empty-state-icon">📄</div>
+          <div className="empty-state-icon">&#128196;</div>
           <h3>Proposal Not Found</h3>
           <p>The proposal you&apos;re looking for doesn&apos;t exist or may have been removed.</p>
           <a href="/approvals" className="btn btn-primary mt-16">Browse Approvals</a>
@@ -108,11 +119,27 @@ export default function ProposalDetailPage() {
 
   const { proposal, approval, receipt } = data;
 
+  const statusLabel = {
+    pending: 'Awaiting Review',
+    approved: 'Approved',
+    rejected: 'Rejected',
+    executed: 'Executed',
+  };
+
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">Proposal Detail</h1>
-        <p>{proposal.workflow_name || proposal.workflow_slug}</p>
+      <div className="page-hero">
+        <div className="page-hero-eyebrow">
+          <span className="page-hero-eyebrow-dot" />
+          Proposal Audit Trail
+        </div>
+        <h1 className="page-title">{proposal.workflow_name || proposal.workflow_slug}</h1>
+        <p>
+          Submitted by {proposal.created_by} on {new Date(proposal.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </p>
+        <div className="page-hero-actions">
+          <span className={`badge badge-${proposal.status}`}>{statusLabel[proposal.status] || proposal.status}</span>
+        </div>
       </div>
 
       <div className="detail-grid">

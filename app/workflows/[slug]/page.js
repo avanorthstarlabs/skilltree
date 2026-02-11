@@ -237,20 +237,21 @@ export default function WorkflowDetailPage() {
 
   return (
     <div>
-      <div className="page-header">
-        <div className="workflow-detail-title-row">
-          <span className="workflow-icon">{workflow.icon}</span>
-          <div>
-            <h1>{workflow.name}</h1>
-            <div className="workflow-detail-badges mt-8">
-              <span className="badge badge-executed">{workflow.category}</span>
-              {workflow.tags.map(t => (
-                <span key={t} className="chip">{t}</span>
-              ))}
-            </div>
-          </div>
+      <div className="page-hero">
+        <div className="page-hero-eyebrow">
+          <span className="page-hero-eyebrow-dot" />
+          {workflow.category}
+        </div>
+        <div className="workflow-hero-title">
+          <span className="workflow-hero-icon">{workflow.icon}</span>
+          <h1>{workflow.name}</h1>
         </div>
         <p>{workflow.description}</p>
+        <div className="workflow-hero-tags">
+          {workflow.tags.map(t => (
+            <span key={t} className="workflow-hero-tag">{t}</span>
+          ))}
+        </div>
       </div>
 
       <div className="card card-narrow">

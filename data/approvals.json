@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "c86cb6d5-83a8-43ff-b1a9-b576b7fed8d9",
+    "proposal_id": "8ea21a47-5931-4b4d-82e0-9cb727d586cc",
+    "decision": "approved",
+    "approved_by": "lead@acme.io",
+    "rationale": "High-severity memory leak affecting dashboard users. Approved for immediate AI triage to prioritize and assign.",
+    "created_at": "2026-02-10T07:04:39.304Z"
+  },
+  {
+    "id": "06729629-7bef-4f32-afcd-e4102d5d30ae",
+    "proposal_id": "da56a75c-b60d-478e-930b-f9f90af4e9d6",
+    "decision": "rejected",
+    "approved_by": "lead@acme.io",
+    "rationale": "Duplicate request — status digest already generated for this week by ops team.",
+    "created_at": "2026-02-10T07:07:57.316Z"
+  }
+]

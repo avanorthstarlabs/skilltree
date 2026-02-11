@@ -29,9 +29,13 @@ export default function ReceiptsPage() {
 
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">Receipts</h1>
-        <p>Audit log of all executed workflow runs with signed output payloads.</p>
+      <div className="page-hero">
+        <div className="page-hero-eyebrow">
+          <span className="page-hero-eyebrow-dot" />
+          Audit Trail
+        </div>
+        <h1 className="page-title">Execution <span className="page-hero-gradient">Receipts</span></h1>
+        <p>Cryptographically signed audit log of all executed workflow runs. Every output is SHA-256 verified.</p>
       </div>
 
       {loading ? (
@@ -40,15 +44,15 @@ export default function ReceiptsPage() {
             <div key={i} className="card" aria-hidden="true">
               <div className="flex items-center justify-between mb-16">
                 <div className="flex flex-col gap-8">
-                  <div className="skeleton skeleton-text" style={{}} />
-                  <div className="skeleton skeleton-text-short" style={{}} />
+                  <div className="skeleton skeleton-text" />
+                  <div className="skeleton skeleton-text-short" />
                 </div>
                 <div className="flex items-center gap-12">
-                  <div className="skeleton skeleton-badge" style={{}} />
-                  <div className="skeleton skeleton-text-short" style={{}} />
+                  <div className="skeleton skeleton-badge" />
+                  <div className="skeleton skeleton-text-short" />
                 </div>
               </div>
-              <div className="skeleton skeleton-button" style={{}} />
+              <div className="skeleton skeleton-button" />
             </div>
           ))}
         </div>
@@ -70,7 +74,7 @@ export default function ReceiptsPage() {
       ) : (
         <div className="flex flex-col gap-16">
           {receipts.map(r => (
-            <div key={r.id} className="card">
+            <div key={r.id} className={`card receipt-card${r.run_status !== 'success' ? ' receipt-card-failed' : ''}`}>
               <div className="flex items-center justify-between mb-16">
                 <div>
                   <div className="font-semibold">{r.workflow_name || 'Workflow Execution'}</div>

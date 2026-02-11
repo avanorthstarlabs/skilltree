@@ -32,9 +32,13 @@ export default function MetricsPage() {
   if (loading) {
     return (
       <div>
-        <div className="page-header">
-          <h1 className="page-title">Metrics Dashboard</h1>
-          <p className="page-subtitle">Track workflow adoption, approval rates, and execution outcomes.</p>
+        <div className="page-hero">
+          <div className="page-hero-eyebrow">
+            <span className="page-hero-eyebrow-dot" />
+            Analytics
+          </div>
+          <h1 className="page-title">Metrics <span className="page-hero-gradient">Dashboard</span></h1>
+          <p>Track workflow adoption, approval rates, and execution outcomes across your organization.</p>
         </div>
         <div className="metric-card-grid mb-24">
           {[...Array(6)].map((_, i) => (
@@ -51,9 +55,13 @@ export default function MetricsPage() {
   if (error) {
     return (
       <div>
-        <div className="page-header">
-          <h1 className="page-title">Metrics Dashboard</h1>
-          <p className="page-subtitle">Track workflow adoption, approval rates, and execution outcomes.</p>
+        <div className="page-hero">
+          <div className="page-hero-eyebrow">
+            <span className="page-hero-eyebrow-dot" />
+            Analytics
+          </div>
+          <h1 className="page-title">Metrics <span className="page-hero-gradient">Dashboard</span></h1>
+          <p>Track workflow adoption, approval rates, and execution outcomes across your organization.</p>
         </div>
         <div className="error-banner">
           <div className="error-banner-icon">&#9888;</div>
@@ -71,9 +79,27 @@ export default function MetricsPage() {
 
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">Metrics Dashboard</h1>
-        <p className="page-subtitle">Track workflow adoption, approval rates, and execution outcomes.</p>
+      <div className="page-hero">
+        <div className="page-hero-eyebrow">
+          <span className="page-hero-eyebrow-dot" />
+          Analytics
+        </div>
+        <h1>Metrics <span className="page-hero-gradient">Dashboard</span></h1>
+        <p>Track workflow adoption, approval rates, and execution outcomes across your organization.</p>
+        <div className="page-hero-stat">
+          <div className="page-hero-stat-item">
+            <span className="page-hero-stat-value">{m.total_proposals || 0}</span>
+            <span className="page-hero-stat-label">Proposals</span>
+          </div>
+          <div className="page-hero-stat-item">
+            <span className="page-hero-stat-value page-hero-stat-value-approved">{m.approval_rate || 0}%</span>
+            <span className="page-hero-stat-label">Approval Rate</span>
+          </div>
+          <div className="page-hero-stat-item">
+            <span className="page-hero-stat-value page-hero-stat-value-accent">{m.total_receipts || 0}</span>
+            <span className="page-hero-stat-label">Executions</span>
+          </div>
+        </div>
       </div>
 
       <div className="metric-card-grid mb-24">

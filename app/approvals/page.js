@@ -72,7 +72,13 @@ export default function ApprovalsPage() {
     fetchProposals();
   }
 
-  const statusFilters = ['pending', 'approved', 'rejected', 'executed', ''];
+  const statusFilters = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'approved', label: 'Approved' },
+    { value: 'rejected', label: 'Rejected' },
+    { value: 'executed', label: 'Executed' },
+    { value: '', label: 'All' },
+  ];
 
   const skeletonRows = Array.from({ length: 5 }, (_, i) => (
     <tr key={`skeleton-${i}`}>
@@ -89,19 +95,23 @@ export default function ApprovalsPage() {
 
   return (
     <div>
-      <div className="page-header">
-        <h1>Approval Queue</h1>
-        <p>Review and approve or reject pending workflow run proposals.</p>
+      <div className="page-hero">
+        <div className="page-hero-eyebrow">
+          <span className="page-hero-eyebrow-dot" />
+          Human Decision Gate
+        </div>
+        <h1>Approval <span className="page-hero-gradient">Queue</span></h1>
+        <p>Review pending workflow proposals. Every execution requires explicit human approval — nothing runs without your sign-off.</p>
       </div>
 
       <div className="chip-group mb-24">
-        {statusFilters.map(s => (
+        {statusFilters.map(({ value, label }) => (
           <button
-            key={s || 'all'}
-            className={`chip${filter === s ? ' active' : ''}`}
-            onClick={() => setFilter(s)}
+            key={value || 'all'}
+            className={`chip${filter === value ? ' active' : ''}`}
+            onClick={() => setFilter(value)}
           >
-            {s || 'All'}
+            {label}
           </button>
         ))}
       </div>
@@ -206,11 +216,11 @@ export default function ApprovalsPage() {
           onClick={() => { setActionModal(null); setRationale(''); }}
         >
           <div
-            className="modal-content"
+            className={`modal-content ${actionModal.decision === 'approved' ? 'modal-approve' : 'modal-reject'}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="mb-16">
-              {actionModal.decision === 'approved' ? 'Approve' : 'Reject'} Proposal
+            <h3 className="modal-title mb-16">
+              {actionModal.decision === 'approved' ? '&#10003; Approve' : '&#10005; Reject'} Proposal
             </h3>
             <div className="form-group">
               <label className="form-label" htmlFor="rationale-textarea">

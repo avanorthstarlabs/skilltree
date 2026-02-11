@@ -1,0 +1,22 @@
+{
+  "name": "@skillforge/community-lead",
+  "version": "0.1.0",
+  "description": "SkillForge Community Lead — AI agent on Farcaster with ElevenLabs voice",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "post": "node cli.js post",
+    "reply": "node cli.js reply",
+    "voice": "node cli.js voice",
+    "schedule": "node scheduler.js"
+  },
+  "dependencies": {
+    "@neynar/nodejs-sdk": "^2.7.0",
+    "elevenlabs": "^1.0.0",
+    "@anthropic-ai/sdk": "^0.39.0",
+    "cron": "^3.1.0",
+    "dotenv": "^16.4.0"
+  }
+}

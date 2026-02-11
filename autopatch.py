@@ -143,7 +143,12 @@ def evaluate_task(task: dict) -> dict:
     for pattern in task.get("check_patterns", []):
         if pattern not in combined_text:
             missing_patterns.append(f"missing '{pattern}'")
-    complete = len(missing_files) == 0 and len(missing_patterns) == 0
+    # Check anti_patterns — these MUST NOT appear in the combined text
+    found_anti = []
+    for anti in task.get("anti_patterns", []):
+        if anti in combined_text:
+            found_anti.append(f"found forbidden '{anti}'")
+    complete = len(missing_files) == 0 and len(missing_patterns) == 0 and len(found_anti) == 0
     # If no required_files defined, task is never auto-complete
     if not task.get("required_files"):
         complete = False
@@ -359,17 +364,33 @@ SYSTEM_API = (
 )
 
 SYSTEM_UI = (
-    "You are a senior UI engineer who builds premium, SaaS-grade interfaces that compete "
-    "with Linear, Vercel, and Stripe dashboards. You have an obsessive eye for detail. "
-    "You follow the project's DESIGN_SYSTEM.md specifications exactly: color tokens, "
-    "typography scale, spacing grid, component patterns, hover/focus states, accessibility. "
-    "Every page has: page header with title + subtitle, loading states (skeleton or spinner), "
-    "empty states (icon + heading + description), error states (message + retry button). "
-    "Every interactive element has hover and focus-visible styles. Every form input has a "
-    "visible label (never placeholder-only). You use CSS variables from globals.css — never "
-    "raw hex values. You match existing component class names and patterns exactly. "
-    "You write semantic HTML with proper ARIA attributes and keyboard accessibility. "
-    "Return ONLY a unified diff (git format). Multiple files per diff are encouraged. "
+    "You are a senior UI engineer and product designer who builds investment-grade, "
+    "visually stunning web applications that compete with Linear, Vercel, and Stripe. "
+    "You think in terms of VISUAL IMPACT first, code correctness second. "
+    "\n\nDESIGN PHILOSOPHY:"
+    "\n- Every app needs a HERO SECTION: dark gradient background, large bold headline "
+    "with gradient-colored accent text, compelling subtitle, CTA buttons, and a visual "
+    "element (floating cards, pipeline visualization, animated icons)."
+    "\n- Include a STATS BAR below the hero: 3-4 live metrics in a grid with large "
+    "numbers, small uppercase labels, and color-coded values."
+    "\n- Include FEATURE CARDS: 3 cards in a row explaining key value propositions "
+    "with colored icons, bold titles, and descriptive text."
+    "\n- Use GRADIENT ACCENTS liberally: gradient text (background-clip), gradient "
+    "top-borders on cards, gradient nav backgrounds, gradient button shadows."
+    "\n- Use ANIMATIONS: fade-in on scroll, shimmer skeletons (not pulse), modal "
+    "slide-up, hover card lift with colored border."
+    "\n- Typography must feel PREMIUM: Inter font, tight letter-spacing on headings "
+    "(-0.025em), heavy weights (700-800), uppercase small labels."
+    "\n- Color palette must feel MODERN: indigo (#6366f1) as primary accent, "
+    "dark navy (#0f0f1a) for dark sections, subtle warm grays for backgrounds."
+    "\n\nCOMPONENT STANDARDS:"
+    "\n- Follow DESIGN_SYSTEM.md exactly for tokens, spacing, and component specs."
+    "\n- Every page: page header, loading skeleton, empty state, error state with retry."
+    "\n- Every interactive element: hover + focus-visible styles."
+    "\n- Forms: visible labels, focus ring, field-level validation."
+    "\n- Use CSS variables from globals.css — NEVER raw hex values."
+    "\n- Semantic HTML with ARIA attributes and keyboard accessibility."
+    "\n\nReturn ONLY a unified diff (git format). Multiple files per diff are encouraged. "
     "The first line MUST start with: diff --git "
     "No markdown fences, no commentary, no extra text. "
     "Do NOT modify CHANGELOG.md."
@@ -526,9 +547,24 @@ UI/DESIGN RULES (CRITICAL — follow exactly):
 - Forms: visible label above every input, focus ring, field-level validation.
 - Cards: 24px padding, 12px radius, shadow-sm at rest, shadow-md + translateY(-2px) on hover.
 - Badges: filled background with status colors, uppercase, 0.75rem, 600 weight.
-- Typography: page title 1.75rem/700, card title 1.125rem/600, body 0.875rem, caption 0.75rem.
+- Typography: page title 1.875rem/700 with letter-spacing -0.025em, card title 1rem/600, body 0.875rem, caption 0.75rem.
 - Spacing: 8px grid. Card padding 24px, section spacing 32px, form groups 20px.
-- Buttons: verb-first labels, 40px min height, disabled opacity 0.5.
+- Buttons: verb-first labels, colored shadow matching button type, slight lift on hover.
+
+VISUAL IMPACT RULES (CRITICAL — this is what makes or breaks the design):
+- The landing/home page MUST have a dark gradient hero section with:
+  - Gradient background (navy to indigo to navy)
+  - Large bold headline (3rem+) with gradient-colored accent text
+  - Subtitle explaining value proposition
+  - CTA buttons (primary filled + secondary outline/ghost)
+  - A floating visual element on the right (pipeline diagram, card stack, etc.)
+  - An eyebrow tag/pill above the headline with a pulsing dot
+- Below the hero: a stats bar showing live metrics (4 columns, large numbers, small labels)
+- Below stats: feature cards (3 columns) with colored icons and value prop descriptions
+- Then the main content (catalog grid, table, etc.)
+- Use gradient accents: gradient top-border on cards revealed on hover, gradient brand icon in nav
+- Skeleton loading uses shimmer animation (gradient slide), not pulse
+- Modals animate in with fadeIn + slideUp
 - If DESIGN_SYSTEM.md is in the file contents below, follow it as the single source of truth.
 """
     else:

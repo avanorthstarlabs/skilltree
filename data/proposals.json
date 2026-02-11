@@ -1,1 +1,61 @@
-[]
+[
+  {
+    "id": "99af9911-fc23-4985-addf-f93d2aee087d",
+    "workflow_id": "wf-001",
+    "workflow_slug": "bug-triage",
+    "workflow_name": "AI Bug Triage",
+    "input_payload": {
+      "title": "Memory leak in dashboard component",
+      "description": "The dashboard component leaks memory when switching between tabs. After about 30 minutes, the page becomes sluggish and eventually crashes. Steps to reproduce: 1) Open dashboard, 2) Switch between tabs rapidly for 5 minutes, 3) Monitor memory in DevTools.",
+      "severity": "high",
+      "component": "dashboard"
+    },
+    "status": "pending",
+    "created_by": "alex@acme.io",
+    "created_at": "2026-02-10T07:02:05.966Z"
+  },
+  {
+    "id": "8ea21a47-5931-4b4d-82e0-9cb727d586cc",
+    "workflow_id": "wf-001",
+    "workflow_slug": "bug-triage",
+    "workflow_name": "AI Bug Triage",
+    "input_payload": {
+      "title": "Memory leak in dashboard component",
+      "description": "The dashboard component leaks memory when switching between tabs. After about 30 minutes, the page becomes sluggish and eventually crashes. Steps to reproduce: 1) Open dashboard, 2) Switch between tabs rapidly for 5 minutes, 3) Monitor memory in DevTools.",
+      "severity": "high",
+      "component": "dashboard"
+    },
+    "status": "executed",
+    "created_by": "alex@acme.io",
+    "created_at": "2026-02-10T07:02:10.041Z"
+  },
+  {
+    "id": "da56a75c-b60d-478e-930b-f9f90af4e9d6",
+    "workflow_id": "wf-002",
+    "workflow_slug": "weekly-status",
+    "workflow_name": "Weekly Status Digest",
+    "input_payload": {
+      "team_name": "Platform Engineering",
+      "date_range": "Feb 3 - Feb 7, 2026",
+      "include_metrics": true
+    },
+    "status": "rejected",
+    "created_by": "jordan@acme.io",
+    "created_at": "2026-02-10T07:03:31.695Z"
+  },
+  {
+    "id": "d7e9cff3-72b9-4865-ae95-1325ea7a4952",
+    "workflow_id": "wf-003",
+    "workflow_slug": "qa-checklist",
+    "workflow_name": "QA Checklist Generator",
+    "input_payload": {
+      "feature_name": "OAuth 2.0 SSO Integration",
+      "requirements_text": "Implement SSO login flow with Google and GitHub providers. Users should be redirected to provider auth page, then back to callback URL. On success, create or link account. On failure, show clear error message. Support remember-me for 30 days. Rate limit auth attempts to 5 per minute.",
+      "include_edge_cases": true,
+      "target_coverage": "comprehensive"
+    },
+    "status": "pending",
+    "created_by": "sam@acme.io",
+    "created_at": "2026-02-10T07:03:39.238Z"
+  }
+]

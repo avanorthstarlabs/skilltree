@@ -6,6 +6,8 @@
   "task_routing": {
     "claude": [
       "layout-nav",
+      "page-landing",
+      "ui-visual-impact",
       "page-catalog",
       "page-workflow-detail",
       "page-approvals",

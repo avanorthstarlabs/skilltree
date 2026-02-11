@@ -80,8 +80,15 @@
       "id": "layout-nav",
       "name": "Shared layout with sticky navigation",
       "description": "app/layout.js with sticky top nav bar showing brand (⚡ Workflow Marketplace), nav links (Catalog, Approvals, Receipts, Metrics). Import globals.css.",
-      "required_files": ["app/layout.js"],
+      "required_files": ["app/layout.js", "app/components/Nav.js"],
       "check_patterns": ["topnav", "Catalog", "Approvals", "Receipts", "Metrics", "globals.css"]
+    },
+    {
+      "id": "page-landing",
+      "name": "Investment-grade landing page with hero, stats, and features",
+      "description": "app/page.js MUST have: (1) A dark gradient hero section with hero-gradient-text headline, subtitle, CTA buttons, and a floating pipeline visual. (2) A stats-bar showing live metrics from /api/metrics. (3) Feature cards (features-grid) with 3 value proposition cards with colored icons. (4) Then the catalog grid below. The page must look like it could get venture funding — not a basic CRUD listing.",
+      "required_files": ["app/page.js", "app/globals.css"],
+      "check_patterns": ["hero", "hero-gradient-text", "stats-bar", "stat-value", "features-grid", "feature-card", "hero-btn-primary", "hero-eyebrow"]
     },
     {
       "id": "page-catalog",
@@ -133,6 +140,13 @@
       "check_patterns": ["--color-accent", "topnav", "card-grid", "badge-pending", "badge-approved", "btn-primary", "form-input", "metric-card", "json-viewer", "empty-state"]
     },
     {
+      "id": "ui-visual-impact",
+      "name": "Premium visual design: gradients, animations, modern palette",
+      "description": "globals.css MUST have: (1) Gradient nav background (linear-gradient). (2) Hero section styles with gradient text (background-clip), radial gradient glows, floating visual animations. (3) Stats bar grid styles. (4) Feature card grid styles with colored icon containers. (5) Shimmer skeleton animation (not pulse). (6) Modal fadeIn + slideUp animations. (7) Card hover gradient top-border reveal. (8) Indigo (#6366f1) as primary accent. (9) Inter font reference. These are the elements that make the difference between 'basic CRUD app' and 'investment-worthy product'.",
+      "required_files": ["app/globals.css"],
+      "check_patterns": ["linear-gradient", "background-clip", "hero", "stats-bar", "features-grid", "skeleton-shimmer", "slideUp", "fadeIn", "#6366f1", "Inter"]
+    },
+    {
       "id": "ui-css-foundations",
       "name": "CSS focus states, skeleton loading, and modal styles",
       "description": "Upgrade globals.css: Add :focus-visible styles with accent ring (box-shadow: 0 0 0 3px rgba(67,97,238,0.15)) on ALL interactive elements (.btn, .nav-link, .chip, .form-input, .form-select, .form-textarea, a). Add .skeleton class with pulse animation for loading placeholders. Add .modal-backdrop with rgba(0,0,0,0.5) and backdrop-filter: blur(4px). Add .modal-content with white bg, --radius-lg, --shadow-lg, max-width 480px, padding 24px. Add .error-banner class for inline error messages with retry. All card hover states must use var(--shadow-md) and translateY(-2px). Follow DESIGN_SYSTEM.md section 5 and 6 exactly.",
@@ -180,6 +194,62 @@
       "description": "Refactor app/metrics/page.js: Replace 'Loading metrics...' with skeleton metric cards. Add error state with retry. Remove ALL inline style={{}} — use CSS classes. Metric cards use .metric-card class with hover elevation. KPI values use .metric-value class. Metric labels use .metric-label class. Table breakdown uses .data-table class. Page header with h1 page-title and subtitle. Empty state if no data.",
       "required_files": ["app/metrics/page.js"],
       "check_patterns": ["skeleton", "error", "setError", "Retry", "page-title", "metric-card"]
+    },
+    {
+      "id": "footer",
+      "name": "Premium site footer with Web3/Solana branding",
+      "description": "app/components/Footer.js: Multi-column footer with brand, tagline, platform nav links, Web3/Solana section (Connect Wallet, On-Chain, Token-Gated, Explorer), resources column, copyright bar. Must include Solana SVG logo/badge. Footer imported in layout.js.",
+      "required_files": ["app/components/Footer.js", "app/layout.js"],
+      "check_patterns": ["site-footer", "footer-grid", "Solana", "Connect Wallet", "Footer"]
+    },
+    {
+      "id": "web3-solana",
+      "name": "Web3/Solana wallet connect and compatibility",
+      "description": "Nav must have a Connect Wallet button with Solana styling. Footer must have Web3 section with Solana badge. CSS must include wallet button styles with Solana gradient colors.",
+      "required_files": ["app/components/Nav.js", "app/components/Footer.js", "app/globals.css"],
+      "check_patterns": ["btn-wallet", "Connect Wallet", "Solana", "wallet"]
+    },
+    {
+      "id": "custom-404",
+      "name": "Custom 404 page with premium styling",
+      "description": "app/not-found.js: Custom 404 page with large gradient '404' text, descriptive message, and CTA buttons back to main pages.",
+      "required_files": ["app/not-found.js"],
+      "check_patterns": ["not-found", "404", "Page not found", "btn"]
+    },
+    {
+      "id": "wallet-provider",
+      "name": "Solana wallet provider with real adapter packages",
+      "description": "WalletProvider wraps the app with ConnectionProvider, WalletProvider, WalletModalProvider. Uses real @solana/wallet-adapter packages with DEFAULT styling.",
+      "required_files": ["app/components/WalletProvider.js", "app/layout.js"],
+      "check_patterns": ["ConnectionProvider", "WalletProvider", "WalletModalProvider", "wallet-adapter-react-ui/styles.css"]
+    },
+    {
+      "id": "hamburger-menu",
+      "name": "Mobile hamburger menu with slide-out drawer",
+      "description": "Nav has hamburger button visible at 768px, mobile drawer with nav links, Escape key close.",
+      "required_files": ["app/components/Nav.js", "app/globals.css"],
+      "check_patterns": ["hamburger", "mobile-drawer", "Escape", "WalletMultiButton"]
+    },
+    {
+      "id": "toast-system",
+      "name": "Toast notification system",
+      "description": "Context-based ToastProvider with useToast hook for success/error/info/warning notifications.",
+      "required_files": ["app/components/Toast.js", "app/layout.js"],
+      "check_patterns": ["ToastProvider", "useToast", "addToast", "toast-container"]
+    },
+    {
+      "id": "seo",
+      "name": "Sitemap and robots.txt",
+      "description": "Auto-generated sitemap.xml and robots.txt using Next.js conventions.",
+      "required_files": ["app/sitemap.js", "app/robots.js"],
+      "check_patterns": ["sitemap", "robots", "userAgent"]
+    },
+    {
+      "id": "tests",
+      "name": "Test scaffolding with passing tests",
+      "description": "Jest configured with next/jest. Test files in __tests__/. npm test script.",
+      "required_files": ["jest.config.js", "package.json"],
+      "check_patterns": ["jest", "test"]
     }
   ]
 }

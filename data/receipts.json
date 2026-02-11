@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "113ac011-27cb-44db-b09a-1ff56e586bda",
+    "proposal_id": "8ea21a47-5931-4b4d-82e0-9cb727d586cc",
+    "workflow_name": "AI Bug Triage",
+    "output_payload": {
+      "priority_score": 4,
+      "category": "P1 - Urgent",
+      "suggested_assignee": "alice@team.com",
+      "estimated_effort": "3-5 days",
+      "recommendation": "Triaged \"Memory leak in dashboard component\" in dashboard: classified as high severity. Recommend immediate investigation based on component criticality and reported impact."
+    },
+    "run_status": "success",
+    "signed_intent": {
+      "canonical": "{\"proposal_id\":\"8ea21a47-5931-4b4d-82e0-9cb727d586cc\",\"workflow_id\":\"wf-001\",\"input_payload\":{\"title\":\"Memory leak in dashboard component\",\"description\":\"The dashboard component leaks memory when switching between tabs. After about 30 minutes, the page becomes sluggish and eventually crashes. Steps to reproduce: 1) Open dashboard, 2) Switch between tabs rapidly for 5 minutes, 3) Monitor memory in DevTools.\",\"severity\":\"high\",\"component\":\"dashboard\"},\"approved_by\":\"lead@acme.io\"}",
+      "signature": "ce9a3184a51baf5220702339726ce0c9cfb28907dd6786153c911b9ac7b5083e"
+    },
+    "created_at": "2026-02-10T07:04:39.305Z"
+  }
+]
