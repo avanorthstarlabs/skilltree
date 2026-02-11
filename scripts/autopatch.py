@@ -14,16 +14,17 @@ import os, sys, subprocess, re, json
 from pathlib import Path
 from datetime import datetime, timezone
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 RUNTIME = Path("/home/hackerman/agent-runtime")
 PROPOSALS = RUNTIME / "planner" / "proposals"
-WORK_ORDER = ROOT / "WORK_ORDER.md"
+DEV_DIR = ROOT / "_dev"
+WORK_ORDER = ROOT / "docs" / "WORK_ORDER.md"
 CHANGELOG = ROOT / "CHANGELOG.md"
 QUALITY_GATE = RUNTIME / "constitution" / "quality_gate.md"
-PROGRESS_FILE = ROOT / "patch_progress.json"
-DONE_CRITERIA = ROOT / "done_criteria.json"
-ROUTING_CFG = ROOT / "routing.json"
-DESIGN_SYSTEM = ROOT / "DESIGN_SYSTEM.md"
+PROGRESS_FILE = DEV_DIR / "patch_progress.json"
+DONE_CRITERIA = DEV_DIR / "done_criteria.json"
+ROUTING_CFG = DEV_DIR / "routing.json"
+DESIGN_SYSTEM = ROOT / "docs" / "DESIGN_SYSTEM.md"
 LOGS = RUNTIME / "logs"
 LOGS.mkdir(parents=True, exist_ok=True)
 
@@ -253,9 +254,9 @@ def context_for_task(task: dict) -> str:
         add("app/layout.js", 3000)
         add("app/globals.css", 10000)  # Full file — critical for UI diffs
         # Include the design system bible — this is the most important context for UI tasks
-        design_sys = ROOT / "DESIGN_SYSTEM.md"
+        design_sys = ROOT / "docs" / "DESIGN_SYSTEM.md"
         if design_sys.exists():
-            add("DESIGN_SYSTEM.md", 8000)
+            add("docs/DESIGN_SYSTEM.md", 8000)
         # Also include an existing page as style reference
         for ref in ["app/page.js", "app/approvals/page.js"]:
             if (ROOT / ref).exists() and ref not in task.get("required_files", []):

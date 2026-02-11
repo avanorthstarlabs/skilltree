@@ -25,7 +25,7 @@ export async function GET(request, { params }) {
       { status: 200 }
     );
   } catch (err) {
-    console.error('GET /api/workflows/[slug] failed', err);
+    console.error('GET /api/v1/workflows/[slug] failed', err);
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }

@@ -16,7 +16,7 @@ export default function ReceiptsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/receipts');
+      const res = await fetch('/api/v1/receipts');
       if (!res.ok) throw new Error(`Failed to load receipts (${res.status})`);
       const data = await res.json();
       setReceipts(data.receipts || []);

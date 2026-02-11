@@ -12,7 +12,7 @@ export default function ProposalDetailPage() {
   function fetchProposal() {
     setLoading(true);
     setError(null);
-    fetch(`/api/proposals/${params.id}`)
+    fetch(`/api/v1/proposals/${params.id}`)
       .then(r => {
         if (!r.ok) throw new Error(`Failed to load proposal (${r.status})`);
         return r.json();

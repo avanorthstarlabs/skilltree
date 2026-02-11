@@ -10,7 +10,7 @@ export default function MetricsPage() {
   const fetchMetrics = useCallback(() => {
     setLoading(true);
     setError(null);
-    fetch('/api/metrics')
+    fetch('/api/v1/metrics')
       .then(r => {
         if (!r.ok) throw new Error(`Failed to fetch metrics (${r.status})`);
         return r.json();

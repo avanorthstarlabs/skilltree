@@ -17,7 +17,7 @@ export default function WorkflowDetailPage() {
   const fetchWorkflow = useCallback(() => {
     setError(null);
     setWorkflow(null);
-    fetch(`/api/workflows/${params.slug}`)
+    fetch(`/api/v1/workflows/${params.slug}`)
       .then(r => {
         if (!r.ok) throw new Error(`Failed to load workflow (${r.status})`);
         return r.json();
@@ -79,7 +79,7 @@ export default function WorkflowDetailPage() {
       return;
     }
 
-    const res = await fetch('/api/proposals', {
+    const res = await fetch('/api/v1/proposals', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

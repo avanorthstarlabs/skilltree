@@ -16,7 +16,7 @@ export default function ApprovalsPage() {
     setError(null);
     try {
       const params = filter ? `?status=${filter}` : '';
-      const res = await fetch(`/api/proposals${params}`);
+      const res = await fetch(`/api/v1/proposals${params}`);
       if (!res.ok) {
         throw new Error(`Failed to fetch proposals (${res.status})`);
       }
@@ -50,7 +50,7 @@ export default function ApprovalsPage() {
     if (rationale.length < 10) return;
     setActing(true);
     try {
-      const res = await fetch('/api/approvals', {
+      const res = await fetch('/api/v1/approvals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

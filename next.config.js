@@ -4,6 +4,15 @@ const webpack = require('webpack');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      { source: '/api/workflows/:path*', destination: '/api/v1/workflows/:path*' },
+      { source: '/api/proposals/:path*', destination: '/api/v1/proposals/:path*' },
+      { source: '/api/approvals/:path*', destination: '/api/v1/approvals/:path*' },
+      { source: '/api/receipts', destination: '/api/v1/receipts' },
+      { source: '/api/metrics', destination: '/api/v1/metrics' },
+    ];
+  },
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
