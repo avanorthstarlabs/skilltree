@@ -1,9 +1,14 @@
 node_modules/
 .next/
-.env
-.env.local
 out/
-__pycache__/
-*.pyc
 supabase/.temp/
 _dev/
+
+# Environment files — NEVER commit secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
